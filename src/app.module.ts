@@ -28,7 +28,7 @@ import { join } from 'path';
       inject: [ConfigService],
     }),
     ServeStaticModule.forRoot({
-      rootPath: join(__dirname, '..', 'client/dist'),
+      rootPath: join(__dirname, '..', 'client'),
     }),
     PrismaModule,
     UserModule,
