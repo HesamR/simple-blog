@@ -34,6 +34,24 @@ function Header({ opened, toggle }: Props) {
     },
   });
 
+  const DesktopMiddleBar = () => {
+    return (
+      <Group visibleFrom='sm'>
+        <Button component='a' href='/users' variant='subtle' size='compact-lg'>
+          Users
+        </Button>
+        <Button
+          component='a'
+          href='/articles'
+          variant='subtle'
+          size='compact-lg'
+        >
+          Articles
+        </Button>
+      </Group>
+    );
+  };
+
   const DesktopProfileMenu = () => {
     return (
       <Menu>
@@ -79,6 +97,19 @@ function Header({ opened, toggle }: Props) {
           </>
         )}
       </Group>
+    );
+  };
+
+  const MobileMiddleBar = () => {
+    return (
+      <>
+        <Button component='a' href='/users' variant='subtle' size='md'>
+          Users
+        </Button>
+        <Button component='a' href='/articles' variant='subtle' size='md'>
+          Articles
+        </Button>
+      </>
     );
   };
 
@@ -130,6 +161,7 @@ function Header({ opened, toggle }: Props) {
             </Button>
           </>
         )}
+        <MobileMiddleBar />
       </AppShell.Navbar>
     );
   };
@@ -149,6 +181,7 @@ function Header({ opened, toggle }: Props) {
         <Burger opened={opened} onClick={toggle} hiddenFrom='sm' size='sm' />
         <Group justify='space-between' style={{ flex: 1 }}>
           <HeaderTitle />
+          <DesktopMiddleBar />
           <DesktopNavBar />
         </Group>
       </Group>
