@@ -11,8 +11,13 @@ import * as compression from 'compression';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  app.enableCors({ credentials: true, origin: true });
   app.setGlobalPrefix('api/v1');
+  app.enableCors({
+    origin: true,
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    allowedHeaders: ['Authorization'],
+    credentials: true,
+  });
 
   const configService = app.get(ConfigService);
 

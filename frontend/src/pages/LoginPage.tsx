@@ -73,6 +73,7 @@ function LoginPage() {
           {...form.getInputProps('rememberMe', { type: 'checkbox' })}
         />
         <Group justify='flex-end' mt='md'>
+          <a href='/forget-password'>Forget password?</a>
           <Button loading={loginPromise.isLoading} type='submit'>
             Login
           </Button>

@@ -65,7 +65,13 @@ function Header({ opened, toggle }: Props) {
           </Button>
         </Menu.Target>
         <Menu.Dropdown>
-          <Menu.Item leftSection={<IconSettings />}>Settings</Menu.Item>
+          <Menu.Item
+            component='a'
+            href='/setting'
+            leftSection={<IconSettings />}
+          >
+            Settings
+          </Menu.Item>
         </Menu.Dropdown>
       </Menu>
     );
@@ -128,7 +134,13 @@ function Header({ opened, toggle }: Props) {
           {user.email}
         </Button>
         <Collapse in={opened}>
-          <Button variant='subtle' leftSection={<IconSettings />} fullWidth>
+          <Button
+            component='a'
+            href='/setting'
+            variant='subtle'
+            leftSection={<IconSettings />}
+            fullWidth
+          >
             Setting
           </Button>
         </Collapse>

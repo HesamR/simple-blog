@@ -1,12 +1,12 @@
 import {
   Body,
-  Query,
   Controller,
   Get,
   Post,
   Res,
   UseGuards,
   Session,
+  Headers,
 } from '@nestjs/common';
 import { Throttle, minutes } from '@nestjs/throttler';
 
@@ -24,7 +24,6 @@ import { ChangePasswordDto } from './dto/change-password.dto';
 import { ForgetPasswordDto } from './dto/forget-password.dto';
 import { ForgetPasswordValidateDto } from './dto/forget-password-validate.dto';
 import { VerifyEmailDto } from './dto/verify-email.dto';
-import { SendVerifyEmailDto } from './dto/send-email-verification.dto';
 
 import { Response } from 'express';
 import { SessionPayload } from './interface/session-payload.interface';
@@ -99,25 +98,38 @@ export class AuthController {
     await this.authService.changeEmail(user.id, changeEmailDto);
   }
 
-  @Post('forget-password')
-  async forgetPassword(@Body() forgetPasswordDto: ForgetPasswordDto) {
-    return this.authService.forgetPassword(forgetPasswordDto);
+  @Get('is-email-verified')
+  @UseGuards(JWTGuard)
+  async isEmailVerified(@CurrentUser() user: UserPayload) {
+    return this.authService.isEmailVerified(user.id);
   }
 
-  @Post('forget-password-validate')
-  async forgetPasswordValidate(
+  @Post('forget-password')
+  async forgetPassword(
+    @Headers('host') host: string,
+    @Body() forgetPasswordDto: ForgetPasswordDto,
+  ) {
+    return this.authService.forgetPassword(host, forgetPasswordDto);
+  }
+
+  @Post('forget-password-complete')
+  async forgetPasswordComplete(
     @Body() forgetPasswordValidateDto: ForgetPasswordValidateDto,
   ) {
-    await this.authService.forgetPasswordValidate(forgetPasswordValidateDto);
+    await this.authService.forgetPasswordComplete(forgetPasswordValidateDto);
   }
 
   @Post('send-verify-email')
-  async sendVerifyEmail(@Body() sendVerifyEmail: SendVerifyEmailDto) {
-    return this.authService.sendVerifyEmail(sendVerifyEmail);
+  @UseGuards(JWTGuard)
+  async sendVerifyEmail(
+    @CurrentUser() user: UserPayload,
+    @Headers('host') host: string,
+  ) {
+    return this.authService.sendVerifyEmail(user.id, host);
   }
 
-  @Get('verify-email')
-  async verfyEmail(@Query() verifyEmailDto: VerifyEmailDto) {
+  @Post('verify-email')
+  async verfyEmail(@Body() verifyEmailDto: VerifyEmailDto) {
     return this.authService.verifyEmail(verifyEmailDto);
   }
 

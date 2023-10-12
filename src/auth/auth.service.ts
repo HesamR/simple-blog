@@ -16,7 +16,6 @@ import { ChangePasswordDto } from './dto/change-password.dto';
 import { ForgetPasswordDto } from './dto/forget-password.dto';
 import { ForgetPasswordValidateDto } from './dto/forget-password-validate.dto';
 import { VerifyEmailDto } from './dto/verify-email.dto';
-import { SendVerifyEmailDto } from './dto/send-email-verification.dto';
 
 import { extractUserPayload } from 'src/user/extractor/user-payload.extractor';
 import { UserPayload } from 'src/user/interface/user-payload.interface';
@@ -88,7 +87,13 @@ export class AuthService {
     await this.userService.updateEmail(userId, email);
   }
 
-  async forgetPassword({ email }: ForgetPasswordDto) {
+  async isEmailVerified(userId: number): Promise<boolean> {
+    const user = await this.userService.findById(userId, { setting: true });
+    if (user) return user.setting.isEmailVerified;
+    else throw new BadRequestException('no user found');
+  }
+
+  async forgetPassword(host: string, { email }: ForgetPasswordDto) {
     const user = await this.userService.findByEmail(email, {
       setting: true,
     });
@@ -99,16 +104,18 @@ export class AuthService {
         { expiresIn: this.configService.get('auth.ttl.forgetPassword') },
       );
 
+      const url = `https://${host}/forget-password-complete?token=${token}`;
+
       await this.mailerService.sendMail({
         to: email,
         subject: 'Forget Password',
         template: 'forget-password',
-        context: { token },
+        context: { url },
       });
     }
   }
 
-  async forgetPasswordValidate({
+  async forgetPasswordComplete({
     token,
     newPassword,
   }: ForgetPasswordValidateDto) {
@@ -120,8 +127,8 @@ export class AuthService {
     }
   }
 
-  async sendVerifyEmail({ email }: SendVerifyEmailDto) {
-    const user = await this.userService.findByEmail(email, {
+  async sendVerifyEmail(userId: number, host: string) {
+    const user = await this.userService.findById(userId, {
       setting: true,
     });
 
@@ -131,11 +138,13 @@ export class AuthService {
         { expiresIn: this.configService.get('auth.ttl.verifyEmail') },
       );
 
+      const url = `https://${host}/verify-email?token=${token}`;
+
       await this.mailerService.sendMail({
-        to: email,
+        to: user.email,
         subject: 'Verify Email',
         template: 'verify-email',
-        context: { token },
+        context: { url },
       });
     }
   }

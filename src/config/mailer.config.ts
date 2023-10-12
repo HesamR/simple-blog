@@ -3,13 +3,17 @@ import { registerAs } from '@nestjs/config';
 
 import { join } from 'path';
 
+const isDevelopment = process.env.NODE_ENV !== 'production';
+
 export default registerAs('mailer', () => ({
-  transport: { jsonTransport: true },
-  defaults: { from: '"No Reply" <no-reply@localhost>' },
+  transport: isDevelopment
+    ? { jsonTransport: true }
+    : process.env.MAILER_TRANSPORT,
+  defaults: { from: '"No Reply" <no-reply@hesamr.top>' },
   template: {
     dir: join(__dirname, '../..', 'templates'),
     adapter: new HandlebarsAdapter(),
     options: { strict: true },
   },
-  preview: true,
+  preview: isDevelopment,
 }));

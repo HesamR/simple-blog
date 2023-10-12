@@ -14,7 +14,7 @@ import { AxiosError } from 'axios';
 import { register, RegisterInput } from '../api/api';
 import usePromise from '../hooks/usePromise';
 
-function Register() {
+function RegisterPage() {
   const navigate = useNavigate();
 
   const [errorMessage, setErrorMessage] = useState('');
@@ -46,7 +46,7 @@ function Register() {
     <>
       <Box maw={340} mx='auto'>
         {registerPromise.isError && (
-          <Alert variant='light' color='red' title='Login Failed!'>
+          <Alert variant='light' color='red' title='Register Failed!'>
             {errorMessage}
           </Alert>
         )}{' '}
@@ -84,4 +84,4 @@ function Register() {
   );
 }
 
-export default Register;
+export default RegisterPage;

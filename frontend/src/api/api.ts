@@ -35,8 +35,21 @@ export interface RegisterInput {
   password: string;
 }
 
+export interface VerifyEmailInput {
+  token: string;
+}
+
+export interface ForgetPasswordInput {
+  email: string;
+}
+
+export interface ForgetPasswordCompleteInput {
+  token: string;
+  newPassword: string;
+}
+
 export function setAccessToken(token: string | null) {
-  api.defaults.headers.common['Authorization'] = token;
+  api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 }
 
 export async function login(input?: LoginInput): Promise<LoginOutput> {
@@ -44,8 +57,8 @@ export async function login(input?: LoginInput): Promise<LoginOutput> {
   return res.data;
 }
 
-export async function logout() {
-  await api.post('/auth/logout');
+export async function logout(): Promise<void> {
+  return api.post('/auth/logout');
 }
 
 export async function refresh(): Promise<RefreshOutput> {
@@ -53,6 +66,26 @@ export async function refresh(): Promise<RefreshOutput> {
   return res.data;
 }
 
-export async function register(input?: RegisterInput) {
-  await api.post('/auth/register', input);
+export async function register(input?: RegisterInput): Promise<void> {
+  return api.post('/auth/register', input);
+}
+
+export async function verifyEmail(input?: VerifyEmailInput): Promise<boolean> {
+  return api.post('/auth/verify-email', input);
+}
+
+export async function forgetPassword(
+  input?: ForgetPasswordInput,
+): Promise<void> {
+  return api.post('/auth/forget-password', input);
+}
+
+export async function forgetPasswordComplete(
+  input?: ForgetPasswordCompleteInput,
+): Promise<boolean> {
+  return api.post('/auth/forget-password-complete', input);
+}
+
+export async function isEmailVerified(): Promise<boolean> {
+  return api.get('/auth/is-email-verified');
 }
