@@ -43,6 +43,7 @@ export interface ProfileOutput {
   email: string;
   name: string;
   bio: string;
+  expiresAt: number;
 }
 
 export async function login(input?: LoginInput): Promise<LoginOutput> {

@@ -21,8 +21,10 @@ export function AuthProvider({ children }: Props) {
   const profilePromise = usePromise({
     promiseFn: profile,
 
-    onSuccess() {
-      setIsLoggedIn(true);
+    onSuccess(out) {
+      if (out.expiresAt > Date.now()) {
+        setIsLoggedIn(true);
+      }
     },
 
     onError() {
