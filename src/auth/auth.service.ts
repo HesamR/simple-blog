@@ -74,7 +74,7 @@ export class AuthService {
   }
 
   async changeEmail(userId: number, { email }: ChangeEmailDto) {
-    await this.userService.updateEmail(userId, email);
+    return this.userService.updateEmail(userId, email);
   }
 
   async isEmailVerified(userId: number): Promise<boolean> {

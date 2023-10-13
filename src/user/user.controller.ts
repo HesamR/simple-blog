@@ -16,6 +16,8 @@ export class UserController {
     const user = await this.userService.findById(id, { profile: true });
 
     return {
+      id,
+      email: user.email,
       name: user.profile.name,
       bio: user.profile.bio,
     };

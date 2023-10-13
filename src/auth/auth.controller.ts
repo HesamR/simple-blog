@@ -40,7 +40,7 @@ export class AuthController {
     @Body() loginDto: LoginDto,
     @Device() device: string,
   ) {
-    const { session, user } = await this.authService.login(loginDto, device);
+    const { session } = await this.authService.login(loginDto, device);
 
     res.cookie('session', session.id, {
       expires: session.expiresAt,
@@ -49,7 +49,7 @@ export class AuthController {
       signed: true,
     });
 
-    return { user, expiresAt: session.expiresAt.getTime() };
+    return { expiresAt: session.expiresAt.getTime() };
   }
 
   @Post('logout')
@@ -79,7 +79,7 @@ export class AuthController {
     @CurrentUser() user: UserPayload,
     @Body() changePasswordDto: ChangePasswordDto,
   ) {
-    await this.authService.changePassword(user.id, changePasswordDto);
+    return this.authService.changePassword(user.id, changePasswordDto);
   }
 
   @Post('change-email')
@@ -88,7 +88,7 @@ export class AuthController {
     @CurrentUser() user: UserPayload,
     @Body() changeEmailDto: ChangeEmailDto,
   ) {
-    await this.authService.changeEmail(user.id, changeEmailDto);
+    return this.authService.changeEmail(user.id, changeEmailDto);
   }
 
   @Get('is-email-verified')

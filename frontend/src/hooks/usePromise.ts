@@ -11,8 +11,8 @@ export interface PromiseState<InT, OutT, ErrT> {
   isLoading: boolean;
   isSuccess: boolean;
   isError: boolean;
-  output: OutT | null;
-  error: ErrT | null;
+  output?: OutT;
+  error?: ErrT;
   call: (input?: InT) => Promise<void>;
 }
 
@@ -22,8 +22,8 @@ function usePromise<InT, OutT, ErrT>(
   const [isLoading, setIsLoading] = useState(false);
   const [isError, setIsError] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
-  const [output, setOutput] = useState<OutT | null>(null);
-  const [error, setError] = useState<ErrT | null>(null);
+  const [output, setOutput] = useState<OutT | undefined>();
+  const [error, setError] = useState<ErrT | undefined>();
 
   const call = async (input?: InT) => {
     setIsLoading(true);
@@ -31,8 +31,8 @@ function usePromise<InT, OutT, ErrT>(
     setIsSuccess(false);
     setIsError(false);
 
-    setOutput(null);
-    setError(null);
+    setOutput(undefined);
+    setError(undefined);
 
     try {
       const out = await options.promiseFn(input);

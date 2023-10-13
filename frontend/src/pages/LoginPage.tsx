@@ -1,4 +1,4 @@
-import { useState, useContext } from 'react';
+import { useState } from 'react';
 import {
   Box,
   TextInput,
@@ -11,14 +11,12 @@ import { useForm, isNotEmpty, isEmail } from '@mantine/form';
 import { useNavigate } from 'react-router-dom';
 import { AxiosError } from 'axios';
 
-import AuthContext from '../context/AuthContext';
 import usePromise from '../hooks/usePromise';
-import { LoginInput, LoginOutput, login } from '../api/api';
+import { LoginInput, login } from '../api/api';
 
 function LoginPage() {
   const navigate = useNavigate();
   const [errorMessage, setErrorMessage] = useState('');
-  const auth = useContext(AuthContext);
 
   const form = useForm<LoginInput>({
     initialValues: { email: '', password: '' },
@@ -31,9 +29,9 @@ function LoginPage() {
   const loginPromise = usePromise({
     promiseFn: login,
 
-    onSuccess(output: LoginOutput) {
-      auth.setState(output);
+    onSuccess() {
       navigate('/');
+      navigate(0);
     },
 
     onError(error: AxiosError<any>) {

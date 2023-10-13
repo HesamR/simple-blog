@@ -60,8 +60,8 @@ function MobileNavbar() {
     promiseFn: logout,
 
     onSuccess() {
-      auth.removeState();
       navigate('/');
+      navigate(0);
     },
   });
 

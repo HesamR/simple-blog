@@ -5,19 +5,12 @@ const api = axios.create({
   withCredentials: true,
 });
 
-export interface User {
-  id: number;
-  email: string;
-  role: string;
-}
-
 export interface LoginInput {
   email: string;
   password: string;
 }
 
 export interface LoginOutput {
-  user: User;
   expiresAt: number;
 }
 
@@ -39,6 +32,17 @@ export interface ForgetPasswordInput {
 export interface ForgetPasswordCompleteInput {
   token: string;
   newPassword: string;
+}
+
+export interface ChangeEmailInput {
+  email: string;
+}
+
+export interface ProfileOutput {
+  id: number;
+  email: string;
+  name: string;
+  bio: string;
 }
 
 export async function login(input?: LoginInput): Promise<LoginOutput> {
@@ -79,4 +83,13 @@ export async function isEmailVerified(): Promise<boolean> {
 
 export async function sendVerifyEmail(): Promise<void> {
   return api.post('auth/send-verify-email');
+}
+
+export async function changeEmail(input?: ChangeEmailInput): Promise<void> {
+  return api.post('auth/change-email', input);
+}
+
+export async function profile(): Promise<ProfileOutput> {
+  const res = await api.get('user/profile');
+  return res.data;
 }

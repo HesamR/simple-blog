@@ -44,8 +44,8 @@ function DesktopRightBar() {
     promiseFn: logout,
 
     onSuccess() {
-      auth.removeState();
       navigate('/');
+      navigate(0);
     },
   });
 

@@ -15,9 +15,16 @@ import {
   IconMail,
   IconUserCircle,
 } from '@tabler/icons-react';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import usePromise from '../hooks/usePromise';
-import { isEmailVerified, sendVerifyEmail } from '../api/api';
+import { AxiosError } from 'axios';
+import {
+  ChangeEmailInput,
+  changeEmail,
+  isEmailVerified,
+  sendVerifyEmail,
+} from '../api/api';
+import { isEmail, useForm } from '@mantine/form';
 
 function SettingPage() {
   return (
@@ -111,15 +118,47 @@ const EmailVerification = () => {
 };
 
 const ChangeEmail = () => {
+  const [error, setError] = useState('');
+
+  const form = useForm<ChangeEmailInput>({
+    validate: {
+      email: isEmail('Invalid email'),
+    },
+  });
+
+  const changeEmailPromise = usePromise({
+    promiseFn: changeEmail,
+
+    onError(error: AxiosError<any>) {
+      const message = error.response?.data?.message;
+      setError(message ? message : error.message);
+    },
+  });
+
   return (
     <Fieldset mt='sm' legend='Change Email'>
-      <form>
+      {changeEmailPromise.isError && (
+        <Alert
+          title='Changing email failed'
+          color='red'
+          icon={<IconExclamationCircle />}
+        >
+          {error}
+        </Alert>
+      )}
+      {changeEmailPromise.isSuccess && (
+        <Alert title='email changed' color='green' icon={<IconCheck />}>
+          make sure to verify email.
+        </Alert>
+      )}
+      <form onSubmit={form.onSubmit(changeEmailPromise.call)}>
         <TextInput
           label='Email'
           description='Write your new email here'
           placeholder='you@email.com'
+          {...form.getInputProps('email')}
         />
-        <Button mt='sm' type='submit'>
+        <Button mt='sm' type='submit' loading={changeEmailPromise.isLoading}>
           Change Email
         </Button>
       </form>
@@ -149,6 +188,7 @@ const ChangePasswordPanel = () => {
     </Box>
   );
 };
+
 const EditProfilePanel = () => {
   return (
     <Box maw={400} mx='auto' mt='sm'>

@@ -25,8 +25,6 @@ async function bootstrap() {
 
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
 
-  console.log(`running on port 3000 in ${process.env.NODE_ENV} mode`);
-
   await app.listen(3000);
 }
 bootstrap();
