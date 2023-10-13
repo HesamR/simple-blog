@@ -8,7 +8,4 @@ export class LoginDto {
 
   @IsNotEmpty()
   password: string;
-
-  @IsBoolean()
-  rememberMe: boolean;
 }

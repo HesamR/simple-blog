@@ -9,6 +9,7 @@ import {
   Headers,
 } from '@nestjs/common';
 import { Throttle, minutes } from '@nestjs/throttler';
+import { Response } from 'express';
 
 import { AuthService } from './auth.service';
 
@@ -16,7 +17,6 @@ import { LoginDto } from './dto/login.dto';
 import { RegisterDto } from './dto/register.dto';
 
 import { SessionGuard } from './guard/session.guard';
-import { JWTGuard } from './guard/jwt.guard';
 import { CurrentUser } from './decorator/current-user.decorator';
 import { Device } from './decorator/device.decorator';
 
@@ -25,10 +25,8 @@ import { ForgetPasswordDto } from './dto/forget-password.dto';
 import { ForgetPasswordValidateDto } from './dto/forget-password-validate.dto';
 import { VerifyEmailDto } from './dto/verify-email.dto';
 
-import { Response } from 'express';
 import { SessionPayload } from './interface/session-payload.interface';
 import { UserPayload } from 'src/user/interface/user-payload.interface';
-import { extractUserPayload } from 'src/user/extractor/user-payload.extractor';
 import { ChangeEmailDto } from './dto/change-email.dto';
 
 @Controller('auth')
@@ -42,21 +40,16 @@ export class AuthController {
     @Body() loginDto: LoginDto,
     @Device() device: string,
   ) {
-    const { accessToken, session, user } = await this.authService.login(
-      loginDto,
-      device,
-    );
+    const { session, user } = await this.authService.login(loginDto, device);
 
-    if (session) {
-      res.cookie('session', session.id, {
-        expires: session.expiresAt,
-        sameSite: 'none',
-        httpOnly: true,
-        signed: true,
-      });
-    }
+    res.cookie('session', session.id, {
+      expires: session.expiresAt,
+      sameSite: 'none',
+      httpOnly: true,
+      signed: true,
+    });
 
-    return { accessToken, user: extractUserPayload(user) };
+    return { user, expiresAt: session.expiresAt.getTime() };
   }
 
   @Post('logout')
@@ -81,7 +74,7 @@ export class AuthController {
   }
 
   @Post('change-password')
-  @UseGuards(JWTGuard)
+  @UseGuards(SessionGuard)
   async changePassword(
     @CurrentUser() user: UserPayload,
     @Body() changePasswordDto: ChangePasswordDto,
@@ -90,7 +83,7 @@ export class AuthController {
   }
 
   @Post('change-email')
-  @UseGuards(JWTGuard)
+  @UseGuards(SessionGuard)
   async changeEmail(
     @CurrentUser() user: UserPayload,
     @Body() changeEmailDto: ChangeEmailDto,
@@ -99,7 +92,7 @@ export class AuthController {
   }
 
   @Get('is-email-verified')
-  @UseGuards(JWTGuard)
+  @UseGuards(SessionGuard)
   async isEmailVerified(@CurrentUser() user: UserPayload) {
     return this.authService.isEmailVerified(user.id);
   }
@@ -120,7 +113,7 @@ export class AuthController {
   }
 
   @Post('send-verify-email')
-  @UseGuards(JWTGuard)
+  @UseGuards(SessionGuard)
   async sendVerifyEmail(
     @CurrentUser() user: UserPayload,
     @Headers('host') host: string,
@@ -131,12 +124,5 @@ export class AuthController {
   @Post('verify-email')
   async verfyEmail(@Body() verifyEmailDto: VerifyEmailDto) {
     return this.authService.verifyEmail(verifyEmailDto);
-  }
-
-  @Get('refresh')
-  @UseGuards(SessionGuard)
-  async refresh(@CurrentUser() user: UserPayload) {
-    const accessToken = await this.authService.refresh(user);
-    return { accessToken, user };
   }
 }

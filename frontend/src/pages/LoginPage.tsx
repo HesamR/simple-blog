@@ -3,7 +3,6 @@ import {
   Box,
   TextInput,
   PasswordInput,
-  Checkbox,
   Group,
   Button,
   Alert,
@@ -14,15 +13,15 @@ import { AxiosError } from 'axios';
 
 import AuthContext from '../context/AuthContext';
 import usePromise from '../hooks/usePromise';
-import { LoginInput, LoginOutput, login, setAccessToken } from '../api/api';
+import { LoginInput, LoginOutput, login } from '../api/api';
 
 function LoginPage() {
   const navigate = useNavigate();
   const [errorMessage, setErrorMessage] = useState('');
-  const { setIsLoggedIn, setUser } = useContext(AuthContext);
+  const auth = useContext(AuthContext);
 
   const form = useForm<LoginInput>({
-    initialValues: { email: '', password: '', rememberMe: false },
+    initialValues: { email: '', password: '' },
     validate: {
       email: isEmail('Invalid email'),
       password: isNotEmpty('password can not be empty'),
@@ -33,11 +32,7 @@ function LoginPage() {
     promiseFn: login,
 
     onSuccess(output: LoginOutput) {
-      setAccessToken(output.accessToken);
-
-      setIsLoggedIn(true);
-      setUser(output.user);
-
+      auth.setState(output);
       navigate('/');
     },
 
@@ -66,11 +61,6 @@ function LoginPage() {
           label='Password'
           placeholder='Password'
           {...form.getInputProps('password')}
-        />
-        <Checkbox
-          mt='md'
-          label='Remember Me?'
-          {...form.getInputProps('rememberMe', { type: 'checkbox' })}
         />
         <Group justify='flex-end' mt='md'>
           <a href='/forget-password'>Forget password?</a>

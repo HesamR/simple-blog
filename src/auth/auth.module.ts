@@ -10,7 +10,6 @@ import { AuthController } from './auth.controller';
 
 import { AuthService } from './auth.service';
 import { SessionService } from './session.service';
-import { JWTGuard } from './guard/jwt.guard';
 import { SessionGuard } from './guard/session.guard';
 
 @Global()
@@ -28,8 +27,8 @@ import { SessionGuard } from './guard/session.guard';
 
   controllers: [AuthController],
 
-  providers: [AuthService, SessionService, SessionGuard, JWTGuard],
+  providers: [AuthService, SessionService, SessionGuard],
 
-  exports: [AuthService, JWTGuard, SessionGuard],
+  exports: [AuthService, SessionGuard],
 })
 export class AuthModule {}

@@ -1,14 +1,13 @@
-import { useState, createContext, ReactNode, useEffect } from 'react';
-import usePromise from '../hooks/usePromise';
-import { RefreshOutput, User, refresh, setAccessToken } from '../api/api';
-import { useInterval } from '@mantine/hooks';
+import { createContext, ReactNode, useEffect, useState } from 'react';
+import { LoginOutput, User } from '../api/api';
+import { useLocalStorage } from '@mantine/hooks';
 
 interface IAuthContext {
   isLoggedIn: boolean;
-  user: User;
+  user?: User;
 
-  setIsLoggedIn: (value: boolean) => void;
-  setUser: (value: User) => void;
+  setState: (out: LoginOutput) => void;
+  removeState: () => void;
 }
 
 interface Props {
@@ -17,53 +16,61 @@ interface Props {
 
 const AuthContext = createContext<IAuthContext>({
   isLoggedIn: false,
-  user: { id: -1, email: '', role: '' },
 
-  setIsLoggedIn(_) {
+  setState() {
     throw new Error('unimplemented');
   },
 
-  setUser(_) {
+  removeState() {
     throw new Error('unimplemented');
   },
 });
 
 export function AuthProvider({ children }: Props) {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [user, setUser] = useState<User>({ id: -1, email: '', role: '' });
 
-  const refreshPromise = usePromise({
-    promiseFn: refresh,
-
-    onSuccess(data: RefreshOutput) {
-      setAccessToken(data.accessToken);
-      setUser(data.user);
-      setIsLoggedIn(true);
-    },
+  const [expiresAt, setExpiresAt, removeExpiresAt] = useLocalStorage({
+    key: 'session-expires-at',
+    defaultValue: 0,
   });
 
-  const refreshInterval = useInterval(() => refreshPromise.call(), 300_000);
+  const [user, setUser, removeUser] = useLocalStorage<User>({
+    key: 'user-info',
+  });
+
+  const removeState = () => {
+    removeExpiresAt();
+    removeUser();
+  };
+
+  const setState = (out: LoginOutput) => {
+    setExpiresAt(out.expiresAt);
+    setUser(out.user);
+  };
 
   useEffect(() => {
-    isLoggedIn
-      ? refreshInterval.start()
-      : refreshInterval.active && refreshInterval.stop();
-  }, [isLoggedIn]);
-
-  useEffect(() => {
-    refreshPromise.call();
-  }, []);
+    if (expiresAt) {
+      if (expiresAt > Date.now()) {
+        setIsLoggedIn(true);
+      } else {
+        setIsLoggedIn(false);
+        removeState();
+      }
+    } else {
+      setIsLoggedIn(false);
+    }
+  }, [expiresAt]);
 
   return (
     <AuthContext.Provider
       value={{
         isLoggedIn,
         user,
-        setIsLoggedIn,
-        setUser,
+        setState,
+        removeState,
       }}
     >
-      {refreshPromise.isLoading ? <p>Loading...</p> : <>{children}</>}
+      {children}
     </AuthContext.Provider>
   );
 }

@@ -2,6 +2,7 @@ import axios from 'axios';
 
 const api = axios.create({
   baseURL: import.meta.env.DEV ? 'http://localhost:3000/api/v1' : 'api/v1',
+  withCredentials: true,
 });
 
 export interface User {
@@ -13,17 +14,11 @@ export interface User {
 export interface LoginInput {
   email: string;
   password: string;
-  rememberMe: boolean;
 }
 
 export interface LoginOutput {
-  accessToken: string;
   user: User;
-}
-
-export interface RefreshOutput {
-  accessToken: string;
-  user: User;
+  expiresAt: number;
 }
 
 export interface RegisterInput {
@@ -46,10 +41,6 @@ export interface ForgetPasswordCompleteInput {
   newPassword: string;
 }
 
-export function setAccessToken(token: string | null) {
-  token && (api.defaults.headers.common['Authorization'] = `Bearer ${token}`);
-}
-
 export async function login(input?: LoginInput): Promise<LoginOutput> {
   const res = await api.post<LoginOutput>('/auth/login', input);
   return res.data;
@@ -57,13 +48,6 @@ export async function login(input?: LoginInput): Promise<LoginOutput> {
 
 export async function logout(): Promise<void> {
   return api.post('/auth/logout');
-}
-
-export async function refresh(): Promise<RefreshOutput> {
-  const res = await api.get<RefreshOutput>('/auth/refresh', {
-    withCredentials: true,
-  });
-  return res.data;
 }
 
 export async function register(input?: RegisterInput): Promise<void> {

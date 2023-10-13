@@ -7,6 +7,9 @@ import {
 import { MailerService } from '@nestjs-modules/mailer';
 import { JwtService } from '@nestjs/jwt';
 
+import * as bcrypt from 'bcrypt';
+import * as ms from 'ms';
+
 import { UserService } from 'src/user/user.service';
 import { SessionService } from './session.service';
 
@@ -20,7 +23,6 @@ import { VerifyEmailDto } from './dto/verify-email.dto';
 import { extractUserPayload } from 'src/user/extractor/user-payload.extractor';
 import { UserPayload } from 'src/user/interface/user-payload.interface';
 
-import * as bcrypt from 'bcrypt';
 import { ConfigService } from '@nestjs/config';
 import { ChangeEmailDto } from './dto/change-email.dto';
 
@@ -34,28 +36,16 @@ export class AuthService {
     private configService: ConfigService,
   ) {}
 
-  async login({ email, password, rememberMe }: LoginDto, device: string) {
+  async login({ email, password }: LoginDto, device: string) {
     const user = await this.userService.findByEmail(email);
 
     const doesPasswordMatch =
       user && (await bcrypt.compare(password, user.password));
 
     if (user && doesPasswordMatch) {
-      const accessTokenPromise = this.jwtService.sign(
-        extractUserPayload(user),
-        { expiresIn: this.configService.getOrThrow('auth.ttl.access') },
-      );
+      const session = await this.sessionService.createOrUpdate(user.id, device);
 
-      const sessionPromise = rememberMe
-        ? this.sessionService.createOrUpdate(user.id, device)
-        : Promise.resolve(null);
-
-      const [accessToken, session] = await Promise.all([
-        accessTokenPromise,
-        sessionPromise,
-      ]);
-
-      return { accessToken, session, user };
+      return { session, user: extractUserPayload(user) };
     }
 
     throw new UnauthorizedException("username and password doesn't match");
@@ -158,10 +148,6 @@ export class AuthService {
     }
 
     return true;
-  }
-
-  async refresh(payload: UserPayload) {
-    return this.jwtService.sign(payload, { expiresIn: '5m' });
   }
 
   async verifyAccessToken(token: string): Promise<UserPayload> {

@@ -1,11 +1,11 @@
 import { Body, Controller, Get, Param, Post, UseGuards } from '@nestjs/common';
 import { Article } from '@prisma/client';
 import { ArticleService } from './article.service';
-import { JWTGuard } from 'src/auth/guard/jwt.guard';
 import { CurrentUser } from 'src/auth/decorator/current-user.decorator';
 import { UserPayload } from 'src/user/interface/user-payload.interface';
 import { CreateArticleDto } from './dto/create-article.dto';
 import { EditArticleDto } from './dto/edit-article.dto';
+import { SessionGuard } from 'src/auth/guard/session.guard';
 
 @Controller('article')
 export class ArticleController {
@@ -27,7 +27,7 @@ export class ArticleController {
   }
 
   @Post('create')
-  @UseGuards(JWTGuard)
+  @UseGuards(SessionGuard)
   async create(
     @CurrentUser() user: UserPayload,
     @Body() createArticleDto: CreateArticleDto,
@@ -36,7 +36,7 @@ export class ArticleController {
   }
 
   @Post('edit')
-  @UseGuards(JWTGuard)
+  @UseGuards(SessionGuard)
   async edit(
     @CurrentUser() user: UserPayload,
     @Body() editArticleDto: EditArticleDto,

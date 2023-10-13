@@ -1,17 +1,17 @@
 import { Controller, Get, Post, Param, Body, UseGuards } from '@nestjs/common';
 
 import { UserService } from './user.service';
-import { JWTGuard } from 'src/auth/guard/jwt.guard';
 import { CurrentUser } from 'src/auth/decorator/current-user.decorator';
 import { UserPayload } from './interface/user-payload.interface';
 import { EditUserDto } from './dto/edit-user.dto';
+import { SessionGuard } from 'src/auth/guard/session.guard';
 
 @Controller('user')
 export class UserController {
   constructor(private userService: UserService) {}
 
   @Get('profile')
-  @UseGuards(JWTGuard)
+  @UseGuards(SessionGuard)
   async profile(@CurrentUser() { id }: UserPayload) {
     const user = await this.userService.findById(id, { profile: true });
 
@@ -32,7 +32,7 @@ export class UserController {
   }
 
   @Post('edit')
-  @UseGuards(JWTGuard)
+  @UseGuards(SessionGuard)
   async edit(
     @CurrentUser() user: UserPayload,
     @Body() editUserDto: EditUserDto,
