@@ -5,9 +5,9 @@ import { useInterval } from '@mantine/hooks';
 
 interface IAuthContext {
   isLoggedIn: boolean;
-  setIsLoggedIn: (value: boolean) => void;
-
   user: User;
+
+  setIsLoggedIn: (value: boolean) => void;
   setUser: (value: User) => void;
 }
 
@@ -51,13 +51,19 @@ export function AuthProvider({ children }: Props) {
   }, [isLoggedIn]);
 
   useEffect(() => {
-    console.log('login on startup');
     refreshPromise.call();
   }, []);
 
   return (
-    <AuthContext.Provider value={{ isLoggedIn, setIsLoggedIn, user, setUser }}>
-      {children}
+    <AuthContext.Provider
+      value={{
+        isLoggedIn,
+        user,
+        setIsLoggedIn,
+        setUser,
+      }}
+    >
+      {refreshPromise.isLoading ? <p>Loading...</p> : <>{children}</>}
     </AuthContext.Provider>
   );
 }

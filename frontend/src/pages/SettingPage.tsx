@@ -15,9 +15,9 @@ import {
   IconMail,
   IconUserCircle,
 } from '@tabler/icons-react';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import usePromise from '../hooks/usePromise';
-import { isEmailVerified } from '../api/api';
+import { isEmailVerified, sendVerifyEmail } from '../api/api';
 
 function SettingPage() {
   return (
@@ -52,6 +52,10 @@ function SettingPage() {
 const EmailVerification = () => {
   const ievPromise = usePromise({
     promiseFn: isEmailVerified,
+  });
+
+  const svePromise = usePromise({
+    promiseFn: sendVerifyEmail,
   });
 
   useEffect(() => {
@@ -97,7 +101,9 @@ const EmailVerification = () => {
             click on button below to send verification email then check your
             email to complete the process
           </Alert>
-          <Button>Send verification email</Button>
+          <Button onClick={svePromise.call} loading={svePromise.isLoading}>
+            Send verification email
+          </Button>
         </>
       )}
     </Fieldset>

@@ -2,8 +2,6 @@ import axios from 'axios';
 
 const api = axios.create({
   baseURL: import.meta.env.DEV ? 'http://localhost:3000/api/v1' : 'api/v1',
-  headers: { 'Content-Type': 'application/json' },
-  withCredentials: true,
 });
 
 export interface User {
@@ -49,7 +47,7 @@ export interface ForgetPasswordCompleteInput {
 }
 
 export function setAccessToken(token: string | null) {
-  api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+  token && (api.defaults.headers.common['Authorization'] = `Bearer ${token}`);
 }
 
 export async function login(input?: LoginInput): Promise<LoginOutput> {
@@ -62,7 +60,9 @@ export async function logout(): Promise<void> {
 }
 
 export async function refresh(): Promise<RefreshOutput> {
-  const res = await api.get<RefreshOutput>('/auth/refresh');
+  const res = await api.get<RefreshOutput>('/auth/refresh', {
+    withCredentials: true,
+  });
   return res.data;
 }
 
@@ -71,7 +71,8 @@ export async function register(input?: RegisterInput): Promise<void> {
 }
 
 export async function verifyEmail(input?: VerifyEmailInput): Promise<boolean> {
-  return api.post('/auth/verify-email', input);
+  const res = await api.post('/auth/verify-email', input);
+  return res.data;
 }
 
 export async function forgetPassword(
@@ -83,9 +84,15 @@ export async function forgetPassword(
 export async function forgetPasswordComplete(
   input?: ForgetPasswordCompleteInput,
 ): Promise<boolean> {
-  return api.post('/auth/forget-password-complete', input);
+  const res = await api.post('/auth/forget-password-complete', input);
+  return res.data;
 }
 
 export async function isEmailVerified(): Promise<boolean> {
-  return api.get('/auth/is-email-verified');
+  const res = await api.get('/auth/is-email-verified');
+  return res.data;
+}
+
+export async function sendVerifyEmail(): Promise<void> {
+  return api.post('auth/send-verify-email');
 }
