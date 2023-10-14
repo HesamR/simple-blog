@@ -10,10 +10,6 @@ export interface LoginInput {
   password: string;
 }
 
-export interface LoginOutput {
-  expiresAt: number;
-}
-
 export interface RegisterInput {
   email: string;
   name: string;
@@ -46,9 +42,18 @@ export interface ProfileOutput {
   expiresAt: number;
 }
 
-export async function login(input?: LoginInput): Promise<LoginOutput> {
-  const res = await api.post<LoginOutput>('/auth/login', input);
-  return res.data;
+export interface ChangePasswordInput {
+  oldPassword: string;
+  newPassword: string;
+}
+
+export interface EditProfileInput {
+  name: string;
+  bio: string;
+}
+
+export async function login(input?: LoginInput): Promise<void> {
+  return api.post('/auth/login', input);
 }
 
 export async function logout(): Promise<void> {
@@ -90,7 +95,17 @@ export async function changeEmail(input?: ChangeEmailInput): Promise<void> {
   return api.post('auth/change-email', input);
 }
 
+export async function changePassword(
+  input?: ChangePasswordInput,
+): Promise<void> {
+  return api.post('auth/change-password', input);
+}
+
 export async function profile(): Promise<ProfileOutput> {
   const res = await api.get('user/profile');
   return res.data;
+}
+
+export async function editProfile(input?: EditProfileInput): Promise<void> {
+  return api.post('/user/edit', input);
 }

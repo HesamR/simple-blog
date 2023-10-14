@@ -15,16 +15,22 @@ import {
   IconMail,
   IconUserCircle,
 } from '@tabler/icons-react';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import usePromise from '../hooks/usePromise';
 import { AxiosError } from 'axios';
 import {
   ChangeEmailInput,
+  ChangePasswordInput,
+  EditProfileInput,
   changeEmail,
+  changePassword,
+  editProfile,
   isEmailVerified,
   sendVerifyEmail,
 } from '../api/api';
-import { isEmail, useForm } from '@mantine/form';
+import { isEmail, isNotEmpty, matches, useForm } from '@mantine/form';
+import AuthContext from '../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
 
 function SettingPage() {
   return (
@@ -176,12 +182,59 @@ const EmailPanel = () => {
 };
 
 const ChangePasswordPanel = () => {
+  const [error, setError] = useState('');
+  const form = useForm<ChangePasswordInput>({
+    validate: {
+      oldPassword: isNotEmpty('required field'),
+      newPassword: matches(
+        /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+        'Minimum eight characters, at least one uppercase letter, one lowercase letter, one number and one special character',
+      ),
+    },
+  });
+
+  const changePasswordPromise = usePromise({
+    promiseFn: changePassword,
+
+    onError(err: AxiosError<any>) {
+      const message = err.response?.data?.message;
+      setError(message ? message : err.message);
+    },
+  });
+
   return (
     <Box maw={400} mx='auto' mt='sm'>
-      <form>
-        <PasswordInput placeholder='old password' label='Old Password' />
-        <PasswordInput placeholder='new password' label='New Password' />
-        <Button mt='sm' type='submit'>
+      {changePasswordPromise.isError && (
+        <Alert
+          color='red'
+          title='Changing password failed'
+          icon={<IconExclamationCircle />}
+        >
+          {error}
+        </Alert>
+      )}
+      {changePasswordPromise.isSuccess && (
+        <Alert
+          color='green'
+          title='Password changed successfuly'
+          icon={<IconCheck />}
+        >
+          you have to login with new password now
+        </Alert>
+      )}
+
+      <form onSubmit={form.onSubmit(changePasswordPromise.call)}>
+        <PasswordInput
+          placeholder='old password'
+          label='Old Password'
+          {...form.getInputProps('oldPassword')}
+        />
+        <PasswordInput
+          placeholder='new password'
+          label='New Password'
+          {...form.getInputProps('newPassword')}
+        />
+        <Button mt='sm' type='submit' loading={changePasswordPromise.isLoading}>
           Change Password
         </Button>
       </form>
@@ -190,11 +243,52 @@ const ChangePasswordPanel = () => {
 };
 
 const EditProfilePanel = () => {
+  const navigate = useNavigate();
+  const auth = useContext(AuthContext);
+  const [error, setError] = useState('');
+
+  const form = useForm<EditProfileInput>({
+    initialValues: {
+      name: auth.user?.name ?? '',
+      bio: auth.user?.bio ?? '',
+    },
+  });
+
+  const editProfilePromise = usePromise({
+    promiseFn: editProfile,
+    onSuccess() {
+      navigate(0);
+    },
+
+    onError(err: AxiosError<any>) {
+      const message = err.response?.data?.message;
+      setError(message ? message : err.message);
+    },
+  });
+
   return (
     <Box maw={400} mx='auto' mt='sm'>
-      <form>
-        <TextInput label='Name' placeholder='Your display name' />
-        <Textarea label='Bio' placeholder='A summery about your self' />
+      {editProfilePromise.isError && (
+        <Alert
+          color='red'
+          title='Profie changing failed'
+          icon={<IconExclamationCircle />}
+        >
+          {error}
+        </Alert>
+      )}
+
+      <form onSubmit={form.onSubmit(editProfilePromise.call)}>
+        <TextInput
+          label='Name'
+          placeholder='Your display name'
+          {...form.getInputProps('name')}
+        />
+        <Textarea
+          label='Bio'
+          placeholder='A summery about your self'
+          {...form.getInputProps('bio')}
+        />
         <Button mt='sm' type='submit'>
           Save
         </Button>

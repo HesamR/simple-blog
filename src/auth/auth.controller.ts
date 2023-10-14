@@ -40,7 +40,7 @@ export class AuthController {
     @Body() loginDto: LoginDto,
     @Device() device: string,
   ) {
-    const { session } = await this.authService.login(loginDto, device);
+    const session = await this.authService.login(loginDto, device);
 
     res.cookie('session', session.id, {
       expires: session.expiresAt,
@@ -48,8 +48,6 @@ export class AuthController {
       httpOnly: true,
       signed: true,
     });
-
-    return { expiresAt: session.expiresAt.getTime() };
   }
 
   @Post('logout')

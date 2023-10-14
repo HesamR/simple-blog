@@ -43,9 +43,7 @@ export class AuthService {
       user && (await bcrypt.compare(password, user.password));
 
     if (user && doesPasswordMatch) {
-      const session = await this.sessionService.createOrUpdate(user.id, device);
-
-      return { session, user: extractUserPayload(user) };
+      return this.sessionService.createOrUpdate(user.id, device);
     }
 
     throw new UnauthorizedException("username and password doesn't match");
