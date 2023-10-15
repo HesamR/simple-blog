@@ -23,36 +23,6 @@ function MobileMiddleBar() {
 function MobileProfileMenu() {
   const [opened, { toggle }] = useDisclosure();
 
-  const auth = useContext(AuthContext);
-
-  return (
-    <>
-      <Button
-        leftSection={<Avatar />}
-        rightSection={<IconChevronDown />}
-        variant='gradient'
-        radius='xs'
-        size='md'
-        onClick={toggle}
-      >
-        {auth.user?.email}
-      </Button>
-      <Collapse in={opened}>
-        <Button
-          component='a'
-          href='/setting'
-          variant='subtle'
-          leftSection={<IconSettings />}
-          fullWidth
-        >
-          Setting
-        </Button>
-      </Collapse>
-    </>
-  );
-}
-
-function MobileNavbar() {
   const navigate = useNavigate();
   const auth = useContext(AuthContext);
 
@@ -66,20 +36,49 @@ function MobileNavbar() {
   });
 
   return (
-    <Stack>
+    <>
+      <Button
+        leftSection={<Avatar />}
+        rightSection={<IconChevronDown />}
+        variant='gradient'
+        radius='xs'
+        size='md'
+        onClick={toggle}
+      >
+        {auth.user?.name}
+      </Button>
+      <Collapse in={opened}>
+        <Button
+          component='a'
+          href='/setting'
+          variant='subtle'
+          leftSection={<IconSettings />}
+          fullWidth
+        >
+          Setting
+        </Button>
+        <Button
+          color='red'
+          variant='subtle'
+          leftSection={<IconLogout />}
+          onClick={logoutPromise.call}
+          loading={logoutPromise.isLoading}
+          fullWidth
+        >
+          Logout
+        </Button>
+      </Collapse>
+    </>
+  );
+}
+
+function MobileNavbar() {
+  const auth = useContext(AuthContext);
+
+  return (
+    <>
       {auth.isLoggedIn ? (
-        <Stack>
-          <MobileProfileMenu />
-          <Button
-            color='red'
-            variant='subtle'
-            leftSection={<IconLogout />}
-            onClick={logoutPromise.call}
-            loading={logoutPromise.isLoading}
-          >
-            Logout
-          </Button>
-        </Stack>
+        <MobileProfileMenu />
       ) : (
         <Stack>
           <Button variant='subtle' component='a' href='/login'>
@@ -91,7 +90,7 @@ function MobileNavbar() {
         </Stack>
       )}
       <MobileMiddleBar />
-    </Stack>
+    </>
   );
 }
 

@@ -52,6 +52,29 @@ export interface EditProfileInput {
   bio: string;
 }
 
+export interface CreateArticleInput {
+  title: string;
+  summery: string;
+  content: string;
+}
+
+export interface CreateArticleOutput {
+  id: number;
+}
+
+export interface EditArticleInput {
+  articleId: number;
+  title?: string;
+  summery?: string;
+  content?: string;
+}
+
+export interface Article {
+  title: string;
+  summery: string;
+  content: string;
+}
+
 export async function login(input?: LoginInput): Promise<void> {
   return api.post('/auth/login', input);
 }
@@ -108,4 +131,20 @@ export async function profile(): Promise<ProfileOutput> {
 
 export async function editProfile(input?: EditProfileInput): Promise<void> {
   return api.post('/user/edit', input);
+}
+
+export async function createArticle(
+  input?: CreateArticleInput,
+): Promise<CreateArticleOutput> {
+  const res = await api.post('/article/create', input);
+  return res.data;
+}
+
+export async function editArticle(input?: EditArticleInput): Promise<void> {
+  return api.post('/article/edit', input);
+}
+
+export async function getCurrentUserArticle(id?: number): Promise<Article> {
+  const res = await api.get(`/article/current-user/${id}`);
+  return res.data;
 }

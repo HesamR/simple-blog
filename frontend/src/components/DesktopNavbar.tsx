@@ -6,7 +6,12 @@ import {
   Title,
   UnstyledButton,
 } from '@mantine/core';
-import { IconChevronDown, IconLogout, IconSettings } from '@tabler/icons-react';
+import {
+  IconChevronDown,
+  IconLogout,
+  IconPlus,
+  IconSettings,
+} from '@tabler/icons-react';
 import AuthContext from '../context/AuthContext';
 import { useContext } from 'react';
 import { logout } from '../api/api';
@@ -14,29 +19,6 @@ import usePromise from '../hooks/usePromise';
 import { useNavigate } from 'react-router-dom';
 
 function DesktopProfileMenu() {
-  const auth = useContext(AuthContext);
-
-  return (
-    <Menu>
-      <Menu.Target>
-        <Button
-          variant='gradient'
-          rightSection={<IconChevronDown />}
-          leftSection={<Avatar />}
-        >
-          {auth.user?.email}
-        </Button>
-      </Menu.Target>
-      <Menu.Dropdown>
-        <Menu.Item component='a' href='/setting' leftSection={<IconSettings />}>
-          Settings
-        </Menu.Item>
-      </Menu.Dropdown>
-    </Menu>
-  );
-}
-
-function DesktopRightBar() {
   const navigate = useNavigate();
   const auth = useContext(AuthContext);
 
@@ -48,21 +30,50 @@ function DesktopRightBar() {
       navigate(0);
     },
   });
+  return (
+    <Menu>
+      <Menu.Target>
+        <Button
+          variant='gradient'
+          rightSection={<IconChevronDown />}
+          leftSection={<Avatar />}
+        >
+          {auth.user?.name}
+        </Button>
+      </Menu.Target>
+      <Menu.Dropdown>
+        <Menu.Item component='a' href='/setting' leftSection={<IconSettings />}>
+          Settings
+        </Menu.Item>
+        <Menu.Item
+          color='red'
+          onClick={logoutPromise.call}
+          leftSection={<IconLogout />}
+          disabled={logoutPromise.isLoading}
+        >
+          Logout
+        </Menu.Item>
+      </Menu.Dropdown>
+    </Menu>
+  );
+}
+
+function DesktopRightBar() {
+  const auth = useContext(AuthContext);
 
   return (
     <Group ml='xl' visibleFrom='sm'>
       {auth.isLoggedIn ? (
         <>
-          <DesktopProfileMenu />
           <Button
             variant='outline'
-            color='red'
-            rightSection={<IconLogout />}
-            onClick={logoutPromise.call}
-            loading={logoutPromise.isLoading}
+            component='a'
+            href='/create-article'
+            leftSection={<IconPlus />}
           >
-            Logout
+            Create
           </Button>
+          <DesktopProfileMenu />
         </>
       ) : (
         <>

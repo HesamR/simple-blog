@@ -1,15 +1,18 @@
-import { IsNotEmpty, IsNumber } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsOptional } from 'class-validator';
 
 export class EditArticleDto {
   @IsNumber()
-  articteId: number;
+  articleId: number;
 
   @IsNotEmpty()
+  @IsOptional()
   title?: string;
 
   @IsNotEmpty()
+  @IsOptional()
   summery?: string;
 
   @IsNotEmpty()
+  @IsOptional()
   content?: string;
 }

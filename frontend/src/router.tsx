@@ -10,6 +10,8 @@ import VerifyEmailPage from './pages/VerifyEmailPage';
 import ForgetPasswordPage from './pages/ForgetPasswordPage';
 import ForgetPasswordCompletePage from './pages/ForgetPasswordCompletePage';
 import SettingPage from './pages/SettingPage';
+import CreateArticlePage from './pages/CreateArticlePage';
+import EditArticlePage from './pages/EditArticlePage';
 
 const routes: RouteObject[] = [
   { path: '/', Component: HomePage },
@@ -22,6 +24,8 @@ const routes: RouteObject[] = [
 
 const protectedRoutes: RouteObject[] = [
   { path: '/setting', Component: SettingPage },
+  { path: '/create-article', Component: CreateArticlePage },
+  { path: '/edit-article/:id', Component: EditArticlePage },
 ];
 
 const requireAuthRoute: RouteObject = {

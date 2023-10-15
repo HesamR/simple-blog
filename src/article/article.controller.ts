@@ -16,14 +16,23 @@ export class ArticleController {
     return this.articleService.getAll();
   }
 
+  @Get(':id')
+  async byId(@Param('id') id: number): Promise<Article> {
+    return this.articleService.getById(id);
+  }
+
   @Get('user/:id')
   async byUserId(@Param('id') userId: number): Promise<Article[]> {
     return this.articleService.getByUserId(userId);
   }
 
-  @Get(':id')
-  async byId(@Param('id') id: number): Promise<Article> {
-    return this.articleService.getById(id);
+  @Get('current-user/:id')
+  @UseGuards(SessionGuard)
+  async currentUserById(
+    @CurrentUser() user: UserPayload,
+    @Param('id') id: number,
+  ): Promise<Article> {
+    return this.articleService.getByUserIdAndId(user.id, id);
   }
 
   @Post('create')

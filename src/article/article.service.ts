@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { Article } from '@prisma/client';
 
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -28,7 +28,7 @@ export class ArticleService {
     editArticleDto: EditArticleDto,
   ): Promise<Article | null> {
     return this.prismaService.article.update({
-      where: { id: editArticleDto.articteId, userId },
+      where: { id: editArticleDto.articleId, userId },
       data: {
         title: editArticleDto.title,
         summery: editArticleDto.summery,
@@ -47,5 +47,19 @@ export class ArticleService {
 
   async getByUserId(userId: number): Promise<Article[]> {
     return this.prismaService.article.findMany({ where: { userId } });
+  }
+
+  async getByUserIdAndId(userId: number, id: number): Promise<Article> {
+    try {
+      const article = await this.prismaService.article.findUniqueOrThrow({
+        where: { userId, id },
+      });
+
+      return article;
+    } catch {
+      throw new UnauthorizedException(
+        'user does not have any article by that id',
+      );
+    }
   }
 }

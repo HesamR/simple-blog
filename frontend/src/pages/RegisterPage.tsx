@@ -9,7 +9,7 @@ import {
   PasswordInput,
   Alert,
 } from '@mantine/core';
-import { useForm, isEmail, matches } from '@mantine/form';
+import { useForm, isEmail, matches, isNotEmpty } from '@mantine/form';
 import { AxiosError } from 'axios';
 import { register, RegisterInput } from '../api/api';
 import usePromise from '../hooks/usePromise';
@@ -21,6 +21,7 @@ function RegisterPage() {
 
   const form = useForm<RegisterInput>({
     validate: {
+      name: isNotEmpty('it is required'),
       email: isEmail('invalid email'),
       password: matches(
         /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
@@ -64,6 +65,7 @@ function RegisterPage() {
             {...form.getInputProps('password')}
           />
           <TextInput
+            withAsterisk
             label='Name'
             placeholder='Display name'
             {...form.getInputProps('name')}
