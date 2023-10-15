@@ -97,24 +97,10 @@ function HeaderTitle() {
   );
 }
 
-function DesktopMiddleBar() {
-  return (
-    <Group visibleFrom='sm'>
-      <Button component='a' href='/users' variant='subtle' size='compact-lg'>
-        Users
-      </Button>
-      <Button component='a' href='/articles' variant='subtle' size='compact-lg'>
-        Articles
-      </Button>
-    </Group>
-  );
-}
-
 function DesktopNavbar() {
   return (
     <Group justify='space-between' style={{ flex: 1 }}>
       <HeaderTitle />
-      <DesktopMiddleBar />
       <DesktopRightBar />
     </Group>
   );

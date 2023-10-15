@@ -7,19 +7,6 @@ import usePromise from '../hooks/usePromise';
 import { logout } from '../api/api';
 import { useNavigate } from 'react-router-dom';
 
-function MobileMiddleBar() {
-  return (
-    <>
-      <Button component='a' href='/users' variant='subtle' size='md'>
-        Users
-      </Button>
-      <Button component='a' href='/articles' variant='subtle' size='md'>
-        Articles
-      </Button>
-    </>
-  );
-}
-
 function MobileProfileMenu() {
   const [opened, { toggle }] = useDisclosure();
 
@@ -89,7 +76,6 @@ function MobileNavbar() {
           </Button>
         </Stack>
       )}
-      <MobileMiddleBar />
     </>
   );
 }

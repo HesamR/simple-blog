@@ -12,7 +12,7 @@ export class ArticleController {
   constructor(private articleService: ArticleService) {}
 
   @Get('all')
-  async all(): Promise<Article[]> {
+  async all() {
     return this.articleService.getAll();
   }
 
@@ -22,7 +22,7 @@ export class ArticleController {
   }
 
   @Get('user/:id')
-  async byUserId(@Param('id') userId: number): Promise<Article[]> {
+  async byUserId(@Param('id') userId: number) {
     return this.articleService.getByUserId(userId);
   }
 

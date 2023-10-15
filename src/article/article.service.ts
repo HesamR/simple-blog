@@ -37,16 +37,35 @@ export class ArticleService {
     });
   }
 
-  async getAll(): Promise<Article[]> {
-    return this.prismaService.article.findMany();
+  async getAll() {
+    return this.prismaService.article.findMany({
+      select: {
+        id: true,
+        title: true,
+        summery: true,
+        createAt: true,
+        updateAt: true,
+        userId: true,
+      },
+    });
   }
 
   async getById(id: number): Promise<Article> {
     return this.prismaService.article.findUnique({ where: { id } });
   }
 
-  async getByUserId(userId: number): Promise<Article[]> {
-    return this.prismaService.article.findMany({ where: { userId } });
+  async getByUserId(userId: number) {
+    return this.prismaService.article.findMany({
+      where: { userId },
+      select: {
+        id: true,
+        title: true,
+        summery: true,
+        createAt: true,
+        updateAt: true,
+        userId: true,
+      },
+    });
   }
 
   async getByUserIdAndId(userId: number, id: number): Promise<Article> {

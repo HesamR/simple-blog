@@ -42,6 +42,11 @@ export interface ProfileOutput {
   expiresAt: number;
 }
 
+export interface ProfileByIdOutput {
+  name: string;
+  bio: string;
+}
+
 export interface ChangePasswordInput {
   oldPassword: string;
   newPassword: string;
@@ -70,9 +75,22 @@ export interface EditArticleInput {
 }
 
 export interface Article {
+  id: number;
   title: string;
   summery: string;
   content: string;
+  createAt: string;
+  updateAt: string;
+  userId: number;
+}
+
+export interface ArticlePartial {
+  id: number;
+  title: string;
+  summery: string;
+  createAt: string;
+  updateAt: string;
+  userId: number;
 }
 
 export async function login(input?: LoginInput): Promise<void> {
@@ -129,6 +147,11 @@ export async function profile(): Promise<ProfileOutput> {
   return res.data;
 }
 
+export async function profileById(id?: number): Promise<ProfileByIdOutput> {
+  const res = await api.get(`user/profile/${id}`);
+  return res.data;
+}
+
 export async function editProfile(input?: EditProfileInput): Promise<void> {
   return api.post('/user/edit', input);
 }
@@ -146,5 +169,15 @@ export async function editArticle(input?: EditArticleInput): Promise<void> {
 
 export async function getCurrentUserArticle(id?: number): Promise<Article> {
   const res = await api.get(`/article/current-user/${id}`);
+  return res.data;
+}
+
+export async function getAllArticles(): Promise<ArticlePartial[]> {
+  const res = await api.get('/article/all');
+  return res.data;
+}
+
+export async function getArticleById(id?: number): Promise<Article> {
+  const res = await api.get(`/article/${id}`);
   return res.data;
 }

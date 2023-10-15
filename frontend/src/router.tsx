@@ -12,6 +12,7 @@ import ForgetPasswordCompletePage from './pages/ForgetPasswordCompletePage';
 import SettingPage from './pages/SettingPage';
 import CreateArticlePage from './pages/CreateArticlePage';
 import EditArticlePage from './pages/EditArticlePage';
+import ArticlePage from './pages/ArticlePage';
 
 const routes: RouteObject[] = [
   { path: '/', Component: HomePage },
@@ -20,6 +21,7 @@ const routes: RouteObject[] = [
   { path: '/verify-email', Component: VerifyEmailPage },
   { path: '/forget-password', Component: ForgetPasswordPage },
   { path: '/forget-password-complete', Component: ForgetPasswordCompletePage },
+  { path: '/article/:id', Component: ArticlePage },
 ];
 
 const protectedRoutes: RouteObject[] = [
