@@ -19,7 +19,7 @@ import { SessionPayload } from 'src/auth/interface/session-payload.interface';
 export class UserController {
   constructor(private userService: UserService) {}
 
-  @Get('profile')
+  @Get('current')
   @UseGuards(SessionGuard)
   async profile(
     @CurrentUser() { id }: UserPayload,

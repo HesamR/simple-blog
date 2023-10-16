@@ -173,8 +173,8 @@ export async function changePassword(
   return api.post('auth/change-password', input);
 }
 
-export async function profile(): Promise<ProfileOutput> {
-  const res = await api.get('user/profile');
+export async function currentUser(): Promise<ProfileOutput> {
+  const res = await api.get('user/current');
   return res.data;
 }
 

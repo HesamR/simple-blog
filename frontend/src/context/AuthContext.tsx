@@ -1,5 +1,5 @@
 import { createContext, ReactNode, useEffect, useState } from 'react';
-import { profile, ProfileOutput } from '../api/api';
+import { currentUser, ProfileOutput } from '../api/api';
 import usePromise from '../hooks/usePromise';
 
 interface IAuthContext {
@@ -21,7 +21,7 @@ export function AuthProvider({ children }: Props) {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
 
   const profilePromise = usePromise({
-    promiseFn: profile,
+    promiseFn: currentUser,
 
     onSuccess(out) {
       if (out.expiresAt > Date.now()) {
