@@ -15,6 +15,7 @@ function HomePage() {
 
   return (
     <Box>
+      {getArticlePromise.isLoading && <p>Loading...</p>}
       {getArticlePromise.isSuccess && (
         <Group wrap='wrap' grow justify='center'>
           {getArticlePromise.output?.map((value) => (
