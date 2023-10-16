@@ -7,15 +7,18 @@ import { AppModule } from './app.module';
 import helmet from 'helmet';
 import * as cookieParser from 'cookie-parser';
 import * as compression from 'compression';
+import { isDev } from './config/isDevMode';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   app.setGlobalPrefix('api/v1');
-  app.enableCors({
-    origin: true,
-    credentials: true,
-  });
+
+  isDev() &&
+    app.enableCors({
+      origin: true,
+      credentials: true,
+    });
 
   const configService = app.get(ConfigService);
 
