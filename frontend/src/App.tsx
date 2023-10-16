@@ -3,14 +3,15 @@ import { MantineProvider } from '@mantine/core';
 
 import { AuthProvider } from './context/AuthContext.tsx';
 import router from './router.tsx';
+import LoadFallback from './components/LoadFallback.tsx';
 
 function App() {
   return (
-    <AuthProvider>
-      <MantineProvider defaultColorScheme='dark'>
-        <RouterProvider router={router} fallbackElement={<p>Loading...</p>} />
-      </MantineProvider>
-    </AuthProvider>
+    <MantineProvider defaultColorScheme='dark'>
+      <AuthProvider>
+        <RouterProvider router={router} fallbackElement={<LoadFallback />} />
+      </AuthProvider>
+    </MantineProvider>
   );
 }
 

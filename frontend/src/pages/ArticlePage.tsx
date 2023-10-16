@@ -3,6 +3,7 @@ import usePromise from '../hooks/usePromise';
 import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { getArticleById } from '../api/api';
 import { useEffect } from 'react';
+import LoadFallback from '../components/LoadFallback';
 
 function ArticlePage() {
   const navigate = useNavigate();
@@ -34,7 +35,7 @@ function ArticlePage() {
 
   return (
     <Box maw={700} mx='auto'>
-      {articlePromise.isLoading && <p>Loading...</p>}
+      {articlePromise.isLoading && <LoadFallback />}
       {articlePromise.isSuccess && (
         <Card shadow='md' padding='lg'>
           <Group pb='sm' justify='space-between'>

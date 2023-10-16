@@ -1,6 +1,7 @@
 import { createContext, ReactNode, useEffect, useState } from 'react';
 import { currentUser, ProfileOutput } from '../api/api';
 import usePromise from '../hooks/usePromise';
+import LoadFallback from '../components/LoadFallback';
 
 interface IAuthContext {
   isLoggedIn: boolean;
@@ -46,7 +47,7 @@ export function AuthProvider({ children }: Props) {
         user: profilePromise.output,
       }}
     >
-      {profilePromise.isLoading ? <p>Loading...</p> : <>{children}</>}
+      {profilePromise.isLoading ? <LoadFallback /> : <>{children}</>}
     </AuthContext.Provider>
   );
 }

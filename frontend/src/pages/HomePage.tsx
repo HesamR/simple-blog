@@ -3,6 +3,7 @@ import { getAllArticles } from '../api/api';
 import usePromise from '../hooks/usePromise';
 import { Box, Group } from '@mantine/core';
 import ArticleCard from '../components/ArticleCard';
+import LoadFallback from '../components/LoadFallback';
 
 function HomePage() {
   const getArticlePromise = usePromise({
@@ -15,7 +16,7 @@ function HomePage() {
 
   return (
     <Box>
-      {getArticlePromise.isLoading && <p>Loading...</p>}
+      {getArticlePromise.isLoading && <LoadFallback />}
       {getArticlePromise.isSuccess && (
         <Group wrap='wrap' grow justify='center'>
           {getArticlePromise.output?.map((value) => (

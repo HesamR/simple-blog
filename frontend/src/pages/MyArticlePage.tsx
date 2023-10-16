@@ -5,6 +5,7 @@ import { getArticleByUserId } from '../api/api';
 import { Box, Stack, Title } from '@mantine/core';
 import EditArticleCard from '../components/EditArticleCard';
 import { useNavigate } from 'react-router-dom';
+import LoadFallback from '../components/LoadFallback';
 
 function MyArticlePage() {
   const auth = useContext(AuthContext);
@@ -27,7 +28,7 @@ function MyArticlePage() {
         My Articles
       </Title>
       <Stack>
-        {articlePromise.isLoading && <p>Loading...</p>}
+        {articlePromise.isLoading && <LoadFallback />}
         {articlePromise.isSuccess &&
           articlePromise.output?.map((article) => (
             <EditArticleCard key={article.id} article={article} />

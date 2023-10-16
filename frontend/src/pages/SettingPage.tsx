@@ -31,6 +31,7 @@ import {
 import { isEmail, isNotEmpty, matches, useForm } from '@mantine/form';
 import AuthContext from '../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
+import LoadFallback from '../components/LoadFallback';
 
 function SettingPage() {
   return (
@@ -76,7 +77,7 @@ const EmailVerification = () => {
   }, []);
 
   if (ievPromise.isLoading) {
-    return <p>Loading...</p>;
+    return <LoadFallback />;
   }
 
   return (

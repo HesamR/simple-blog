@@ -3,6 +3,7 @@ import { AxiosError } from 'axios';
 import usePromise from '../hooks/usePromise';
 import { verifyEmail } from '../api/api';
 import { useEffect, useState } from 'react';
+import LoadFallback from '../components/LoadFallback';
 
 function VerifyEmailPage() {
   const [errorMessage, setErrorMessage] = useState('');
@@ -25,7 +26,7 @@ function VerifyEmailPage() {
 
   return (
     <>
-      {verifyEmailPromise.isLoading && <p>Loading...</p>}
+      {verifyEmailPromise.isLoading && <LoadFallback />}
       {verifyEmailPromise.isError && <p>{errorMessage}</p>}
       {verifyEmailPromise.isSuccess && (
         <p>Email verified! you can close this page.</p>
