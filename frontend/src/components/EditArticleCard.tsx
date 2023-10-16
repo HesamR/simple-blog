@@ -2,6 +2,7 @@ import { Badge, Button, Card, Divider, Group, Text } from '@mantine/core';
 import { ArticlePartial2, deleteArticle } from '../api/api';
 import usePromise from '../hooks/usePromise';
 import { useNavigate } from 'react-router-dom';
+import { IconEdit, IconTrash } from '@tabler/icons-react';
 
 interface Props {
   article: ArticlePartial2;
@@ -48,15 +49,17 @@ function EditArticleCard({ article }: Props) {
       <Group pt='sm' justify='end'>
         <Button
           component='a'
-          href={`/edit-article/${article.id}`}
           variant='outline'
           size='compact-sm'
+          rightSection={<IconEdit size={16} />}
+          href={`/edit-article/${article.id}`}
         >
           Edit
         </Button>
         <Button
           color='red'
           size='compact-sm'
+          rightSection={<IconTrash size={16} />}
           loading={deletePromise.isLoading}
           onClick={() => deletePromise.call({ articleId: article.id })}
         >
