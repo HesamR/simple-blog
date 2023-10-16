@@ -2,18 +2,15 @@ import { HandlebarsAdapter } from '@nestjs-modules/mailer/dist/adapters/handleba
 import { registerAs } from '@nestjs/config';
 
 import { join } from 'path';
-
-const isDevelopment = process.env.NODE_ENV !== 'production';
+import { isDev } from './isDevMode';
 
 export default registerAs('mailer', () => ({
-  transport: isDevelopment
-    ? { jsonTransport: true }
-    : process.env.MAILER_TRANSPORT,
+  transport: isDev() ? { jsonTransport: true } : process.env.MAILER_TRANSPORT,
   defaults: { from: '"No Reply" <no-reply@hesamr.top>' },
   template: {
     dir: join(__dirname, '../..', 'templates'),
     adapter: new HandlebarsAdapter(),
     options: { strict: true },
   },
-  preview: isDevelopment,
+  preview: isDev(),
 }));

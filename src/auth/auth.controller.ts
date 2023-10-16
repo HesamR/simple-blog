@@ -28,6 +28,7 @@ import { VerifyEmailDto } from './dto/verify-email.dto';
 import { SessionPayload } from './interface/session-payload.interface';
 import { UserPayload } from 'src/user/interface/user-payload.interface';
 import { ChangeEmailDto } from './dto/change-email.dto';
+import { isDev } from 'src/config/isDevMode';
 
 @Controller('auth')
 @Throttle({ default: { limit: 10, ttl: minutes(1) } })
@@ -44,9 +45,10 @@ export class AuthController {
 
     res.cookie('session', session.id, {
       expires: session.expiresAt,
-      sameSite: 'none',
+      sameSite: isDev() ? 'none' : 'strict',
       httpOnly: true,
       signed: true,
+      secure: isDev(),
     });
   }
 
