@@ -7,7 +7,7 @@ import {
   Fieldset,
   Alert,
 } from '@mantine/core';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { isNotEmpty, useForm } from '@mantine/form';
 import { IconCheck, IconExclamationCircle } from '@tabler/icons-react';
 import { useEffect, useState } from 'react';
@@ -28,8 +28,8 @@ function EditArticlePage() {
   const [error, setError] = useState('');
   const [content, setContent] = useState('');
 
-  const params = useParams();
-  const articleId = params['id'] ? parseInt(params['id']) : -1;
+  const [params] = useSearchParams();
+  const articleId = params.has('id') ? parseInt(params.get('id') ?? '-1') : -1;
 
   if (articleId < 0) {
     navigate('/');

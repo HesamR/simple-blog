@@ -1,13 +1,13 @@
 import { Badge, Box, Card, Divider, Group, Text } from '@mantine/core';
 import usePromise from '../hooks/usePromise';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { getArticleById } from '../api/api';
 import { useEffect } from 'react';
 
 function ArticlePage() {
   const navigate = useNavigate();
-  const params = useParams();
-  const articleId = params['id'] ? parseInt(params['id']) : -1;
+  const [params] = useSearchParams();
+  const articleId = params.has('id') ? parseInt(params.get('id') ?? '-1') : -1;
 
   if (articleId < 0) {
     navigate('/');
@@ -59,7 +59,7 @@ function ArticlePage() {
             </Text>
             <Badge
               component='a'
-              href={`/user/${articlePromise.output?.user.profile.id}`}
+              href={`/user?id=${articlePromise.output?.user.profile.id}`}
             >
               {articlePromise.output?.user.profile.name}
             </Badge>

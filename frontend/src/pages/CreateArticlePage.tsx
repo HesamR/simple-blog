@@ -36,7 +36,7 @@ function CreateArticlePage() {
   const createArticlePromise = usePromise({
     promiseFn: createArticle,
     onSuccess({ id }) {
-      navigate(`/edit-article/${id}`);
+      navigate(`/edit-article?id=${id}`);
     },
     onError(error: AxiosError<any>) {
       const message = error.response?.data?.message;

@@ -16,7 +16,7 @@ function ArticleCard({ article }: Props) {
 
   return (
     <Card shadow='sm' padding='lg' radius='lg' miw={350}>
-      <Text component='a' href={`/article/${article.id}`} size='lg' fw={500}>
+      <Text component='a' href={`/article?id=${article.id}`} size='lg' fw={500}>
         {article.title}
       </Text>
       <Text size='sm' c='dimmed' pt='sm'>
@@ -30,7 +30,7 @@ function ArticleCard({ article }: Props) {
         <Text size='xs' c='dimmed'>
           Author:
         </Text>
-        <Badge component='a' href={`/user/${article.user.profile.id}`}>
+        <Badge component='a' href={`/user?id=${article.user.profile.id}`}>
           {article.user.profile.name}
         </Badge>
       </Group>

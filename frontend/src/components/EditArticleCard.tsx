@@ -51,7 +51,7 @@ function EditArticleCard({ article }: Props) {
           variant='outline'
           size='compact-sm'
           rightSection={<IconEdit size={16} />}
-          onClick={() => navigate(`/edit-article/${article.id}`)}
+          onClick={() => navigate(`/edit-article?id=${article.id}`)}
         >
           Edit
         </Button>

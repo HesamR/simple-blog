@@ -22,13 +22,13 @@ const routes: RouteObject[] = [
   { path: '/verify-email', Component: VerifyEmailPage },
   { path: '/forget-password', Component: ForgetPasswordPage },
   { path: '/forget-password-complete', Component: ForgetPasswordCompletePage },
-  { path: '/article/:id', Component: ArticlePage },
+  { path: '/article', Component: ArticlePage },
 ];
 
 const protectedRoutes: RouteObject[] = [
   { path: '/setting', Component: SettingPage },
   { path: '/create-article', Component: CreateArticlePage },
-  { path: '/edit-article/:id', Component: EditArticlePage },
+  { path: '/edit-article', Component: EditArticlePage },
   { path: '/my-articles', Component: MyArticlePage },
 ];
 
