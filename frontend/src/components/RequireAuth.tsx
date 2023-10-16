@@ -1,17 +1,19 @@
 import { useContext } from 'react';
-import { Outlet } from 'react-router-dom';
+import { Outlet, Navigate } from 'react-router-dom';
 
 import AuthContext from '../context/AuthContext';
 
 function RequireAuth() {
-  const { isLoggedIn } = useContext(AuthContext);
+  const { isLoggedIn, isSucceed } = useContext(AuthContext);
 
-  return isLoggedIn ? (
-    <Outlet />
+  return isSucceed ? (
+    isLoggedIn ? (
+      <Outlet />
+    ) : (
+      <Navigate to='/login' />
+    )
   ) : (
-    <p>
-      You must be logged in to access this page. <a href='/login'>Login</a>
-    </p>
+    <p>Loading...</p>
   );
 }
 

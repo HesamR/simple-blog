@@ -4,6 +4,7 @@ import usePromise from '../hooks/usePromise';
 
 interface IAuthContext {
   isLoggedIn: boolean;
+  isSucceed: boolean;
   user?: ProfileOutput;
 }
 
@@ -13,6 +14,7 @@ interface Props {
 
 const AuthContext = createContext<IAuthContext>({
   isLoggedIn: false,
+  isSucceed: false,
 });
 
 export function AuthProvider({ children }: Props) {
@@ -39,6 +41,7 @@ export function AuthProvider({ children }: Props) {
   return (
     <AuthContext.Provider
       value={{
+        isSucceed: profilePromise.isSuccess,
         isLoggedIn,
         user: profilePromise.output,
       }}
