@@ -30,14 +30,14 @@ model UserProfile {
   id     Int     @id @default(autoincrement())
   name   String?
   bio    String?
-  user   User    @relation(fields: [userId], references: [id])
+  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId Int     @unique
 }
 
 model UserSetting {
   id              Int     @id @default(autoincrement())
   isEmailVerified Boolean
-  user            User    @relation(fields: [userId], references: [id])
+  user            User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId          Int     @unique
 }
 
@@ -45,7 +45,7 @@ model UserSession {
   id        String   @id @default(uuid())
   device    String
   expiresAt DateTime
-  user      User     @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    Int
 
   @@unique([userId, device])
@@ -58,6 +58,6 @@ model Article {
   content  String
   createAt DateTime @default(now())
   updateAt DateTime @updatedAt
-  user     User     @relation(fields: [userId], references: [id])
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId   Int
 }
