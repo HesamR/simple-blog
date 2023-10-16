@@ -103,6 +103,18 @@ export interface ArticlePartial {
   };
 }
 
+export interface ArticlePartial2 {
+  id: number;
+  title: string;
+  summery: string;
+  createAt: string;
+  updateAt: string;
+}
+
+export interface DeleteArticleInput {
+  articleId: number;
+}
+
 export async function login(input?: LoginInput): Promise<void> {
   return api.post('/auth/login', input);
 }
@@ -190,4 +202,15 @@ export async function getAllArticles(): Promise<ArticlePartial[]> {
 export async function getArticleById(id?: number): Promise<Article> {
   const res = await api.get(`/article/${id}`);
   return res.data;
+}
+
+export async function getArticleByUserId(
+  userId?: number,
+): Promise<ArticlePartial2[]> {
+  const res = await api.get(`/article/user/${userId}`);
+  return res.data;
+}
+
+export async function deleteArticle(input?: DeleteArticleInput): Promise<void> {
+  return api.post('/article/delete', input);
 }

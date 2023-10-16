@@ -1,6 +1,11 @@
 import { Avatar, Button, Collapse, Stack } from '@mantine/core';
 import { useDisclosure } from '@mantine/hooks';
-import { IconChevronDown, IconLogout, IconSettings } from '@tabler/icons-react';
+import {
+  IconArticle,
+  IconChevronDown,
+  IconLogout,
+  IconSettings,
+} from '@tabler/icons-react';
 import { useContext } from 'react';
 import AuthContext from '../context/AuthContext';
 import usePromise from '../hooks/usePromise';
@@ -43,6 +48,15 @@ function MobileProfileMenu() {
           fullWidth
         >
           Setting
+        </Button>
+        <Button
+          component='a'
+          href='/my-articles'
+          variant='subtle'
+          leftSection={<IconArticle />}
+          fullWidth
+        >
+          My Articles
         </Button>
         <Button
           color='red'

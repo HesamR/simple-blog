@@ -7,6 +7,7 @@ import {
   UnstyledButton,
 } from '@mantine/core';
 import {
+  IconArticle,
   IconChevronDown,
   IconLogout,
   IconPlus,
@@ -44,6 +45,13 @@ function DesktopProfileMenu() {
       <Menu.Dropdown>
         <Menu.Item component='a' href='/setting' leftSection={<IconSettings />}>
           Settings
+        </Menu.Item>
+        <Menu.Item
+          component='a'
+          href='/my-articles'
+          leftSection={<IconArticle />}
+        >
+          My Articles
         </Menu.Item>
         <Menu.Item
           color='red'

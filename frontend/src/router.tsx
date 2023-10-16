@@ -13,6 +13,7 @@ import SettingPage from './pages/SettingPage';
 import CreateArticlePage from './pages/CreateArticlePage';
 import EditArticlePage from './pages/EditArticlePage';
 import ArticlePage from './pages/ArticlePage';
+import MyArticlePage from './pages/MyArticlePage';
 
 const routes: RouteObject[] = [
   { path: '/', Component: HomePage },
@@ -28,6 +29,7 @@ const protectedRoutes: RouteObject[] = [
   { path: '/setting', Component: SettingPage },
   { path: '/create-article', Component: CreateArticlePage },
   { path: '/edit-article/:id', Component: EditArticlePage },
+  { path: '/my-articles', Component: MyArticlePage },
 ];
 
 const requireAuthRoute: RouteObject = {

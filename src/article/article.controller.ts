@@ -6,6 +6,7 @@ import { UserPayload } from 'src/user/interface/user-payload.interface';
 import { CreateArticleDto } from './dto/create-article.dto';
 import { EditArticleDto } from './dto/edit-article.dto';
 import { SessionGuard } from 'src/auth/guard/session.guard';
+import { DeleteArticleDto } from './dto/delete-article.dto';
 
 @Controller('article')
 export class ArticleController {
@@ -51,5 +52,14 @@ export class ArticleController {
     @Body() editArticleDto: EditArticleDto,
   ) {
     return this.articleService.edit(user.id, editArticleDto);
+  }
+
+  @Post('delete')
+  @UseGuards(SessionGuard)
+  async deleteById(
+    @CurrentUser() user: UserPayload,
+    @Body() deleteArticleDto: DeleteArticleDto,
+  ) {
+    return this.articleService.deleteById(deleteArticleDto.articleId, user.id);
   }
 }
