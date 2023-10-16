@@ -7,12 +7,6 @@ import ArticleCard from '../components/ArticleCard';
 function HomePage() {
   const getArticlePromise = usePromise({
     promiseFn: getAllArticles,
-    onSuccess(out) {
-      const users = new Set();
-      out.forEach(({ userId }) => {
-        users.add(userId);
-      });
-    },
   });
 
   useEffect(() => {
@@ -22,7 +16,7 @@ function HomePage() {
   return (
     <Box>
       {getArticlePromise.isSuccess && (
-        <Group wrap='wrap' grow>
+        <Group wrap='wrap' grow justify='center'>
           {getArticlePromise.output?.map((value) => (
             <ArticleCard article={value} key={value.id} />
           ))}

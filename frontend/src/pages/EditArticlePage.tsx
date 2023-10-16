@@ -73,8 +73,6 @@ function EditArticlePage() {
       content: '',
     };
 
-    console.log(`ArticleId is ${articleId}`);
-
     editArticlePromise.call({
       articleId,
       title: title !== oldArtile.title ? title : undefined,

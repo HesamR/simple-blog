@@ -88,6 +88,15 @@ export interface Article {
     };
   };
 }
+export interface UserArticle {
+  id: number;
+  title: string;
+  summery: string;
+  content: string;
+  createAt: string;
+  updateAt: string;
+  userId: string;
+}
 
 export interface ArticlePartial {
   id: number;
@@ -189,7 +198,7 @@ export async function editArticle(input?: EditArticleInput): Promise<void> {
   return api.post('/article/edit', input);
 }
 
-export async function getCurrentUserArticle(id?: number): Promise<Article> {
+export async function getCurrentUserArticle(id?: number): Promise<UserArticle> {
   const res = await api.get(`/article/current-user/${id}`);
   return res.data;
 }
