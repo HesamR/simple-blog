@@ -160,26 +160,26 @@ export async function isEmailVerified(): Promise<boolean> {
 }
 
 export async function sendVerifyEmail(): Promise<void> {
-  return api.post('auth/send-verify-email');
+  return api.post('/auth/send-verify-email');
 }
 
 export async function changeEmail(input?: ChangeEmailInput): Promise<void> {
-  return api.post('auth/change-email', input);
+  return api.post('/auth/change-email', input);
 }
 
 export async function changePassword(
   input?: ChangePasswordInput,
 ): Promise<void> {
-  return api.post('auth/change-password', input);
+  return api.post('/auth/change-password', input);
 }
 
 export async function currentUser(): Promise<ProfileOutput> {
-  const res = await api.get('user/current');
+  const res = await api.get('/user/current');
   return res.data;
 }
 
 export async function profileById(id?: number): Promise<ProfileByIdOutput> {
-  const res = await api.get(`user/profile/${id}`);
+  const res = await api.get(`/user/profile/${id}`);
   return res.data;
 }
 
