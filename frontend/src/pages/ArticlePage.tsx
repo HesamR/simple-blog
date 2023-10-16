@@ -1,6 +1,6 @@
 import { Badge, Box, Card, Divider, Group, Text } from '@mantine/core';
 import usePromise from '../hooks/usePromise';
-import { useNavigate, useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams, Link } from 'react-router-dom';
 import { getArticleById } from '../api/api';
 import { useEffect } from 'react';
 
@@ -58,8 +58,8 @@ function ArticlePage() {
               Auther :
             </Text>
             <Badge
-              component='a'
-              href={`/user?id=${articlePromise.output?.user.profile.id}`}
+              component={Link}
+              to={`/user?id=${articlePromise.output?.user.profile.id}`}
             >
               {articlePromise.output?.user.profile.name}
             </Badge>

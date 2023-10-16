@@ -10,7 +10,7 @@ import { useContext } from 'react';
 import AuthContext from '../context/AuthContext';
 import usePromise from '../hooks/usePromise';
 import { logout } from '../api/api';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 
 function MobileProfileMenu() {
   const [opened, { toggle }] = useDisclosure();
@@ -41,8 +41,8 @@ function MobileProfileMenu() {
       </Button>
       <Collapse in={opened}>
         <Button
-          component='a'
-          href='/setting'
+          component={Link}
+          to='/setting'
           variant='subtle'
           leftSection={<IconSettings />}
           fullWidth
@@ -50,8 +50,8 @@ function MobileProfileMenu() {
           Setting
         </Button>
         <Button
-          component='a'
-          href='/my-articles'
+          component={Link}
+          to='/my-articles'
           variant='subtle'
           leftSection={<IconArticle />}
           fullWidth
@@ -82,10 +82,10 @@ function MobileNavbar() {
         <MobileProfileMenu />
       ) : (
         <Stack>
-          <Button variant='subtle' component='a' href='/login'>
+          <Button variant='subtle' component={Link} to='/login'>
             Login
           </Button>
-          <Button variant='subtle' component='a' href='/register'>
+          <Button variant='subtle' component={Link} to='/register'>
             Register
           </Button>
         </Stack>

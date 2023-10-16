@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import { Badge, Button, Card, Divider, Group, Text } from '@mantine/core';
 import { ArticlePartial2, deleteArticle } from '../api/api';
 import usePromise from '../hooks/usePromise';
@@ -32,7 +33,12 @@ function EditArticleCard({ article }: Props) {
   return (
     <Card shadow='sm' radius='lg' miw={350}>
       <Group pb='sm' justify='space-between'>
-        <Text component='a' href={`/article/${article.id}`} size='lg' fw={500}>
+        <Text
+          component={Link}
+          to={`/article?id=${article.id}`}
+          size='lg'
+          fw={500}
+        >
           {article.title}
         </Text>
         <Group>

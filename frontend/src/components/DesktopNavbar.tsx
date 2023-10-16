@@ -1,3 +1,4 @@
+import { Link } from 'react-router-dom';
 import {
   Avatar,
   Button,
@@ -28,7 +29,6 @@ function DesktopProfileMenu() {
 
     onSuccess() {
       navigate('/');
-      navigate(0);
     },
   });
   return (
@@ -43,12 +43,16 @@ function DesktopProfileMenu() {
         </Button>
       </Menu.Target>
       <Menu.Dropdown>
-        <Menu.Item component='a' href='/setting' leftSection={<IconSettings />}>
+        <Menu.Item
+          component={Link}
+          to='/setting'
+          leftSection={<IconSettings />}
+        >
           Settings
         </Menu.Item>
         <Menu.Item
-          component='a'
-          href='/my-articles'
+          component={Link}
+          to='/my-articles'
           leftSection={<IconArticle />}
         >
           My Articles
@@ -75,8 +79,8 @@ function DesktopRightBar() {
         <>
           <Button
             variant='outline'
-            component='a'
-            href='/create-article'
+            component={Link}
+            to='/create-article'
             leftSection={<IconPlus />}
           >
             Create
@@ -85,10 +89,10 @@ function DesktopRightBar() {
         </>
       ) : (
         <>
-          <Button component='a' variant='subtle' href='/login'>
+          <Button component={Link} variant='subtle' to='/login'>
             Login
           </Button>
-          <Button component='a' variant='outline' href='/register'>
+          <Button component={Link} variant='outline' to='/register'>
             Register
           </Button>
         </>
@@ -99,7 +103,7 @@ function DesktopRightBar() {
 
 function HeaderTitle() {
   return (
-    <UnstyledButton component='a' href='/'>
+    <UnstyledButton component={Link} to='/'>
       <Title order={4}>Blog</Title>
     </UnstyledButton>
   );

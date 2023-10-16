@@ -125,6 +125,7 @@ const EmailVerification = () => {
 
 const ChangeEmail = () => {
   const [error, setError] = useState('');
+  const navigate = useNavigate();
 
   const form = useForm<ChangeEmailInput>({
     validate: {
@@ -134,6 +135,10 @@ const ChangeEmail = () => {
 
   const changeEmailPromise = usePromise({
     promiseFn: changeEmail,
+
+    onSuccess() {
+      navigate(0);
+    },
 
     onError(error: AxiosError<any>) {
       const message = error.response?.data?.message;
