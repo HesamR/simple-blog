@@ -16,6 +16,7 @@ import { AxiosError } from 'axios';
 import usePromise from '../hooks/usePromise';
 import { editArticle, getCurrentUserArticle } from '../api/api';
 import ArticleEditor from '../components/ArticleEditor';
+import LoadFallback from '../components/LoadFallback';
 
 interface FormValue {
   title: string;
@@ -99,20 +100,23 @@ function EditArticlePage() {
               your edits have been saved!
             </Alert>
           )}
-          <form onSubmit={form.onSubmit(handleForm)}>
-            <TextInput label='Title' {...form.getInputProps('title')} />
-            <Textarea label='Summery' {...form.getInputProps('summery')} />
-            <Button
-              mt='sm'
-              type='submit'
-              loading={editArticlePromise.isLoading}
-            >
-              Edit
-            </Button>
-          </form>
+          {getArticlePromise.isLoading && <LoadFallback />}
+          {getArticlePromise.isSuccess && (
+            <form onSubmit={form.onSubmit(handleForm)}>
+              <TextInput label='Title' {...form.getInputProps('title')} />
+              <Textarea label='Summery' {...form.getInputProps('summery')} />
+              <Button
+                mt='sm'
+                type='submit'
+                loading={editArticlePromise.isLoading}
+              >
+                Edit
+              </Button>
+            </form>
+          )}
         </Fieldset>
       </Box>
-      {getArticlePromise.isLoading && <p>Loading..</p>}
+      {getArticlePromise.isLoading && <LoadFallback />}
       {getArticlePromise.isSuccess && (
         <ArticleEditor
           content={getArticlePromise.output?.content}
