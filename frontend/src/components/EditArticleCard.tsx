@@ -48,11 +48,10 @@ function EditArticleCard({ article }: Props) {
       </Text>
       <Group pt='sm' justify='end'>
         <Button
-          component='a'
           variant='outline'
           size='compact-sm'
           rightSection={<IconEdit size={16} />}
-          href={`/edit-article/${article.id}`}
+          onClick={() => navigate(`/edit-article/${article.id}`)}
         >
           Edit
         </Button>
