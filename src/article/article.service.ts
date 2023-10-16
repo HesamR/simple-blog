@@ -45,13 +45,24 @@ export class ArticleService {
         summery: true,
         createAt: true,
         updateAt: true,
-        userId: true,
+        user: { select: { profile: { select: { name: true, id: true } } } },
       },
     });
   }
 
-  async getById(id: number): Promise<Article> {
-    return this.prismaService.article.findUnique({ where: { id } });
+  async getById(id: number) {
+    return this.prismaService.article.findUnique({
+      where: { id },
+      select: {
+        id: true,
+        title: true,
+        summery: true,
+        content: true,
+        createAt: true,
+        updateAt: true,
+        user: { select: { profile: { select: { name: true, id: true } } } },
+      },
+    });
   }
 
   async getByUserId(userId: number) {
@@ -63,7 +74,7 @@ export class ArticleService {
         summery: true,
         createAt: true,
         updateAt: true,
-        userId: true,
+        user: { select: { profile: { select: { name: true, id: true } } } },
       },
     });
   }

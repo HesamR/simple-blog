@@ -17,7 +17,7 @@ export class ArticleController {
   }
 
   @Get(':id')
-  async byId(@Param('id') id: number): Promise<Article> {
+  async byId(@Param('id') id: number) {
     return this.articleService.getById(id);
   }
 

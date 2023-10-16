@@ -1,7 +1,7 @@
 import { Badge, Box, Card, Divider, Group, Text } from '@mantine/core';
 import usePromise from '../hooks/usePromise';
 import { useNavigate, useParams } from 'react-router-dom';
-import { getArticleById, profileById } from '../api/api';
+import { getArticleById } from '../api/api';
 import { useEffect } from 'react';
 
 function ArticlePage() {
@@ -19,16 +19,6 @@ function ArticlePage() {
       navigate('/');
     },
   });
-
-  const profilePromise = usePromise({
-    promiseFn: profileById,
-  });
-
-  useEffect(() => {
-    if (articlePromise.isSuccess) {
-      profilePromise.call(articlePromise.output?.userId);
-    }
-  }, [articlePromise.isSuccess]);
 
   useEffect(() => {
     articlePromise.call(articleId);
@@ -67,15 +57,12 @@ function ArticlePage() {
             <Text c='dimmed' size='xs'>
               Auther :
             </Text>
-            {profilePromise.isLoading && <p>Loading...</p>}
-            {profilePromise.isSuccess && (
-              <Badge
-                component='a'
-                href={`/user/${articlePromise.output?.userId}`}
-              >
-                {profilePromise.output?.name}
-              </Badge>
-            )}
+            <Badge
+              component='a'
+              href={`/user/${articlePromise.output?.user.profile.id}`}
+            >
+              {articlePromise.output?.user.profile.name}
+            </Badge>
           </Group>
           <Divider labelPosition='center' />
           <div

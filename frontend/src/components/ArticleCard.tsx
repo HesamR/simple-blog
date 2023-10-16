@@ -1,7 +1,5 @@
 import { Badge, Card, Group, Text } from '@mantine/core';
-import { ArticlePartial, profileById } from '../api/api';
-import usePromise from '../hooks/usePromise';
-import { useEffect } from 'react';
+import { ArticlePartial } from '../api/api';
 
 interface Props {
   article: ArticlePartial;
@@ -16,14 +14,6 @@ function ArticleCard({ article }: Props) {
     });
   };
 
-  const profilePromise = usePromise({
-    promiseFn: profileById,
-  });
-
-  useEffect(() => {
-    profilePromise.call(article.userId);
-  }, []);
-
   return (
     <Card shadow='sm' padding='lg' radius='lg' miw={350}>
       <Text component='a' href={`/article/${article.id}`} size='lg' fw={500}>
@@ -37,17 +27,12 @@ function ArticleCard({ article }: Props) {
           Created At:
         </Text>
         <Badge variant='light'>{formatDate(article.createAt)}</Badge>
-        {profilePromise.isLoading && <p>Loading</p>}
-        {profilePromise.isSuccess && (
-          <>
-            <Text size='xs' c='dimmed'>
-              Author:
-            </Text>
-            <Badge component='a' href={`/user/${article.userId}`}>
-              {profilePromise.output?.name}
-            </Badge>
-          </>
-        )}
+        <Text size='xs' c='dimmed'>
+          Author:
+        </Text>
+        <Badge component='a' href={`/user/${article.user.profile.id}`}>
+          {article.user.profile.name}
+        </Badge>
       </Group>
     </Card>
   );

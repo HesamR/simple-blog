@@ -81,7 +81,12 @@ export interface Article {
   content: string;
   createAt: string;
   updateAt: string;
-  userId: number;
+  user: {
+    profile: {
+      id: number;
+      name: string;
+    };
+  };
 }
 
 export interface ArticlePartial {
@@ -90,7 +95,12 @@ export interface ArticlePartial {
   summery: string;
   createAt: string;
   updateAt: string;
-  userId: number;
+  user: {
+    profile: {
+      id: number;
+      name: string;
+    };
+  };
 }
 
 export async function login(input?: LoginInput): Promise<void> {
