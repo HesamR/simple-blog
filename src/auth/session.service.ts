@@ -59,10 +59,10 @@ export class SessionService {
     await this.prismaService.userSession.delete({ where: { id } });
   }
 
-  @Cron('0 3 * * * *')
+  @Cron('0 0 * * *')
   async handleOutdatedSessions() {
     await this.prismaService.userSession.deleteMany({
-      where: { expiresAt: { gt: new Date() } },
+      where: { expiresAt: { lt: new Date() } },
     });
   }
 }
