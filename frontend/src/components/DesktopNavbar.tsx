@@ -27,6 +27,10 @@ function DesktopProfileMenu() {
   const logoutPromise = usePromise({
     promiseFn: logout,
 
+    onError() {
+      navigate(0);
+    },
+
     onSuccess() {
       navigate('/');
     },
