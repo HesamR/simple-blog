@@ -1,7 +1,9 @@
 ## Simple blog
 
 a very simple blog for demonstration purposes.
-you can view the app on [here](https://simple-blog.hesamr.top) (Caution: this is hosted on a free service ([Render](render.com)) so it might take a while to load up (it spins down after periods of inactivity) )
+you can view the app on [here](https://simple-blog.hesamr.top)
+
+- CAUTION: this is hosted on a free service ([Render](render.com)) so it might take a while to load up (it spins down after periods of inactivity)
 
 ### Features
 
