@@ -57,7 +57,7 @@ function ArticlePage() {
           </Text>
           <Group pb='md' align='center'>
             <Text c='dimmed' size='xs'>
-              Auther :
+              Author :
             </Text>
             <Badge
               component={Link}
