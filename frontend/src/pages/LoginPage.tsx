@@ -8,7 +8,7 @@ import {
   Alert,
 } from '@mantine/core';
 import { useForm, isNotEmpty, isEmail } from '@mantine/form';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { AxiosError } from 'axios';
 
 import usePromise from '../hooks/usePromise';
@@ -61,7 +61,7 @@ function LoginPage() {
           {...form.getInputProps('password')}
         />
         <Group justify='flex-end' mt='md'>
-          <a href='/forget-password'>Forget password?</a>
+          <Link to='/forget-password'>Forget password?</Link>
           <Button loading={loginPromise.isLoading} type='submit'>
             Login
           </Button>
