@@ -19,7 +19,7 @@ import { join } from 'path';
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true, load: [authConfig, mailerConfig] }),
-    ThrottlerModule.forRoot([{ ttl: 1000, limit: 15 }]),
+    ThrottlerModule.forRoot([{ ttl: 1000, limit: 3 }]),
     ScheduleModule.forRoot(),
     MailerModule.forRootAsync({
       useFactory: (configService: ConfigService) => {
