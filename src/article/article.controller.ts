@@ -17,20 +17,15 @@ export class ArticleController {
     return this.articleService.getAll();
   }
 
-  @Get(':id')
-  async byId(@Param('id') id: number) {
-    return this.articleService.getById(id);
+  @Get('current-user')
+  @UseGuards(SessionGuard)
+  async currentUser(@CurrentUser() user: UserPayload) {
+    return this.articleService.getByUserId(user.id);
   }
 
   @Get('user/:id')
   async byUserId(@Param('id') userId: number) {
     return this.articleService.getByUserId(userId);
-  }
-
-  @Get('current-user')
-  @UseGuards(SessionGuard)
-  async currentUser(@CurrentUser() user: UserPayload) {
-    return this.articleService.getByUserId(user.id);
   }
 
   @Get('current-user/:id')
@@ -40,6 +35,11 @@ export class ArticleController {
     @Param('id') id: number,
   ): Promise<Article> {
     return this.articleService.getByUserIdAndId(user.id, id);
+  }
+
+  @Get(':id')
+  async byId(@Param('id') id: number) {
+    return this.articleService.getById(id);
   }
 
   @Post('create')
