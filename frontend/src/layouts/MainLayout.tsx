@@ -23,7 +23,7 @@ function MainLayout() {
           <DesktopNavbar />
         </Group>
         <AppShell.Navbar>
-          <MobileNavbar />
+          <MobileNavbar onClick={toggle} />
         </AppShell.Navbar>
       </AppShell.Header>
       <AppShell.Main>

@@ -4,6 +4,7 @@ import {
   IconArticle,
   IconChevronDown,
   IconLogout,
+  IconPlus,
   IconSettings,
 } from '@tabler/icons-react';
 import { useContext } from 'react';
@@ -12,7 +13,11 @@ import usePromise from '../hooks/usePromise';
 import { logout } from '../api/api';
 import { useNavigate, Link } from 'react-router-dom';
 
-function MobileProfileMenu() {
+interface Props {
+  onClick: () => void;
+}
+
+function MobileProfileMenu({ onClick }: Props) {
   const [opened, { toggle }] = useDisclosure();
 
   const navigate = useNavigate();
@@ -41,6 +46,7 @@ function MobileProfileMenu() {
       </Button>
       <Collapse in={opened}>
         <Button
+          onClick={onClick}
           component={Link}
           to='/setting'
           variant='subtle'
@@ -50,6 +56,7 @@ function MobileProfileMenu() {
           Setting
         </Button>
         <Button
+          onClick={onClick}
           component={Link}
           to='/my-articles'
           variant='subtle'
@@ -69,23 +76,44 @@ function MobileProfileMenu() {
           Logout
         </Button>
       </Collapse>
+      <Button
+        mt='sm'
+        onClick={onClick}
+        variant='subtle'
+        component={Link}
+        to='/create-article'
+        fullWidth
+        leftSection={<IconPlus />}
+      >
+        Create Article
+      </Button>
     </>
   );
 }
 
-function MobileNavbar() {
+function MobileNavbar({ onClick }: Props) {
   const auth = useContext(AuthContext);
 
   return (
     <>
       {auth.isLoggedIn ? (
-        <MobileProfileMenu />
+        <MobileProfileMenu onClick={onClick} />
       ) : (
         <Stack>
-          <Button variant='subtle' component={Link} to='/login'>
+          <Button
+            variant='subtle'
+            onClick={onClick}
+            component={Link}
+            to='/login'
+          >
             Login
           </Button>
-          <Button variant='subtle' component={Link} to='/register'>
+          <Button
+            variant='subtle'
+            onClick={onClick}
+            component={Link}
+            to='/register'
+          >
             Register
           </Button>
         </Stack>
