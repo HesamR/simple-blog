@@ -220,6 +220,11 @@ export async function getArticleByUserId(
   return res.data;
 }
 
+export async function getMyArticles(): Promise<ArticlePartial2[]> {
+  const res = await api.get('/article/current-user');
+  return res.data;
+}
+
 export async function deleteArticle(input?: DeleteArticleInput): Promise<void> {
   return api.post('/article/delete', input);
 }

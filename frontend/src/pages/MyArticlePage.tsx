@@ -1,25 +1,23 @@
-import { useContext, useEffect } from 'react';
-import AuthContext from '../context/AuthContext';
 import usePromise from '../hooks/usePromise';
-import { getArticleByUserId } from '../api/api';
+import { getMyArticles } from '../api/api';
 import { Box, Stack, Title } from '@mantine/core';
 import EditArticleCard from '../components/EditArticleCard';
 import { useNavigate } from 'react-router-dom';
 import LoadFallback from '../components/LoadFallback';
+import { useEffect } from 'react';
 
 function MyArticlePage() {
-  const auth = useContext(AuthContext);
   const navigate = useNavigate();
 
   const articlePromise = usePromise({
-    promiseFn: getArticleByUserId,
+    promiseFn: getMyArticles,
     onError() {
       navigate('/');
     },
   });
 
   useEffect(() => {
-    articlePromise.call(auth.user?.id);
+    articlePromise.call();
   }, []);
 
   return (

@@ -27,6 +27,12 @@ export class ArticleController {
     return this.articleService.getByUserId(userId);
   }
 
+  @Get('current-user')
+  @UseGuards(SessionGuard)
+  async currentUser(@CurrentUser() user: UserPayload) {
+    return this.articleService.getByUserId(user.id);
+  }
+
   @Get('current-user/:id')
   @UseGuards(SessionGuard)
   async currentUserById(

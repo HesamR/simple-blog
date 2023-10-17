@@ -28,6 +28,7 @@ function ArticlePage() {
   const formatDate = (value?: string): string => {
     const date = new Date(value ?? '');
     return date.toLocaleDateString(undefined, {
+      year: 'numeric',
       month: 'short',
       day: '2-digit',
     });

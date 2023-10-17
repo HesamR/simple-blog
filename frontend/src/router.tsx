@@ -14,6 +14,7 @@ import CreateArticlePage from './pages/CreateArticlePage';
 import EditArticlePage from './pages/EditArticlePage';
 import ArticlePage from './pages/ArticlePage';
 import MyArticlePage from './pages/MyArticlePage';
+import UserPage from './pages/UserPage';
 
 const routes: RouteObject[] = [
   { path: '/', Component: HomePage },
@@ -23,6 +24,7 @@ const routes: RouteObject[] = [
   { path: '/forget-password', Component: ForgetPasswordPage },
   { path: '/forget-password-complete', Component: ForgetPasswordCompletePage },
   { path: '/article', Component: ArticlePage },
+  { path: '/user', Component: UserPage },
 ];
 
 const protectedRoutes: RouteObject[] = [
