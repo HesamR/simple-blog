@@ -1,9 +1,8 @@
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-import usePromise from '../hooks/usePromise';
-import { getArticleByUserId, profileById } from '../api/api';
-import { useEffect } from 'react';
+import { getUserArticles, getProfileById } from '../api/api';
 import LoadFallback from '../components/LoadFallback';
 import { Badge, Box, Card, Group, Stack, Text, Title } from '@mantine/core';
+import { useQuery } from '@tanstack/react-query';
 
 function UserPage() {
   const navigate = useNavigate();
@@ -15,24 +14,19 @@ function UserPage() {
     navigate('/');
   }
 
-  const profilePromise = usePromise({
-    promiseFn: profileById,
-    onError() {
-      navigate('/');
-    },
+  const profile = useQuery({
+    queryKey: ['get-profile-by-id', userId],
+    queryFn: () => getProfileById(userId),
   });
 
-  const articlesPromise = usePromise({
-    promiseFn: getArticleByUserId,
-    onError() {
-      navigate('/');
-    },
+  const articles = useQuery({
+    queryKey: ['get-user-articles', userId],
+    queryFn: () => getUserArticles(userId),
   });
 
-  useEffect(() => {
-    profilePromise.call(userId);
-    articlesPromise.call(userId);
-  }, []);
+  if (profile.isError || articles.isError) {
+    navigate('/');
+  }
 
   const formatDate = (value: string): string => {
     const date = new Date(value);
@@ -46,21 +40,21 @@ function UserPage() {
   return (
     <div>
       <Box maw={500} mx='auto' pb='sm'>
-        {profilePromise.isLoading && <LoadFallback />}
-        {profilePromise.isSuccess && (
+        {profile.isPending && <LoadFallback />}
+        {profile.isSuccess && (
           <Card radius='lg'>
-            <Title order={3}>{profilePromise.output?.name}</Title>
+            <Title order={3}>{profile.data.name}</Title>
             <Text c='dimmed' size='sm'>
-              {profilePromise.output?.bio}
+              {profile.data.bio}
             </Text>
           </Card>
         )}
       </Box>
       <Box maw={750} mx='auto'>
-        {articlesPromise.isLoading && <LoadFallback />}
-        {articlesPromise.isSuccess && (
+        {articles.isPending && <LoadFallback />}
+        {articles.isSuccess && (
           <Stack justify='center'>
-            {articlesPromise.output?.map((article) => (
+            {articles.data.map((article) => (
               <Card key={article.id} radius='lg'>
                 <Group justify='space-between' pb='sm'>
                   <Text

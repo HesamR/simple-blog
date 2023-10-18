@@ -15,8 +15,7 @@ import {
   IconMail,
   IconUserCircle,
 } from '@tabler/icons-react';
-import { useContext, useEffect, useState } from 'react';
-import usePromise from '../hooks/usePromise';
+import { useContext, useState } from 'react';
 import { AxiosError } from 'axios';
 import {
   ChangeEmailInput,
@@ -30,8 +29,8 @@ import {
 } from '../api/api';
 import { isEmail, isNotEmpty, matches, useForm } from '@mantine/form';
 import AuthContext from '../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
 import LoadFallback from '../components/LoadFallback';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 
 function SettingPage() {
   return (
@@ -64,25 +63,22 @@ function SettingPage() {
 }
 
 const EmailVerification = () => {
-  const ievPromise = usePromise({
-    promiseFn: isEmailVerified,
+  const verified = useQuery({
+    queryKey: ['current-user', 'is-email-verified'],
+    queryFn: isEmailVerified,
   });
 
-  const svePromise = usePromise({
-    promiseFn: sendVerifyEmail,
+  const send = useMutation({
+    mutationFn: sendVerifyEmail,
   });
 
-  useEffect(() => {
-    ievPromise.call();
-  }, []);
-
-  if (ievPromise.isLoading) {
+  if (verified.isPending) {
     return <LoadFallback />;
   }
 
   return (
     <Fieldset mt='md' legend='Email Verification'>
-      {ievPromise.isError && (
+      {verified.isError && (
         <Alert
           my='md'
           color='red'
@@ -93,7 +89,7 @@ const EmailVerification = () => {
         </Alert>
       )}
 
-      {ievPromise.isSuccess && ievPromise.output && (
+      {verified.isSuccess && verified.data && (
         <Alert
           my='md'
           title='Email is verified'
@@ -104,7 +100,7 @@ const EmailVerification = () => {
         </Alert>
       )}
 
-      {ievPromise.isSuccess && !ievPromise.output && (
+      {verified.isSuccess && !verified.data && (
         <>
           <Alert
             mb='sm'
@@ -115,7 +111,7 @@ const EmailVerification = () => {
             click on button below to send verification email then check your
             email to complete the process
           </Alert>
-          <Button onClick={svePromise.call} loading={svePromise.isLoading}>
+          <Button onClick={() => send.mutate()} loading={send.isPending}>
             Send verification email
           </Button>
         </>
@@ -125,8 +121,8 @@ const EmailVerification = () => {
 };
 
 const ChangeEmail = () => {
+  const queryClient = useQueryClient();
   const [error, setError] = useState('');
-  const navigate = useNavigate();
 
   const form = useForm<ChangeEmailInput>({
     validate: {
@@ -134,11 +130,11 @@ const ChangeEmail = () => {
     },
   });
 
-  const changeEmailPromise = usePromise({
-    promiseFn: changeEmail,
+  const { isError, isSuccess, isPending, mutate } = useMutation({
+    mutationFn: changeEmail,
 
     onSuccess() {
-      navigate(0);
+      queryClient.invalidateQueries({ queryKey: ['current-user'] });
     },
 
     onError(error: AxiosError<any>) {
@@ -149,7 +145,7 @@ const ChangeEmail = () => {
 
   return (
     <Fieldset mt='sm' legend='Change Email'>
-      {changeEmailPromise.isError && (
+      {isError && (
         <Alert
           title='Changing email failed'
           color='red'
@@ -158,19 +154,19 @@ const ChangeEmail = () => {
           {error}
         </Alert>
       )}
-      {changeEmailPromise.isSuccess && (
+      {isSuccess && (
         <Alert title='email changed' color='green' icon={<IconCheck />}>
           make sure to verify email.
         </Alert>
       )}
-      <form onSubmit={form.onSubmit(changeEmailPromise.call)}>
+      <form onSubmit={form.onSubmit((values) => mutate(values))}>
         <TextInput
           label='Email'
           description='Write your new email here'
           placeholder='you@email.com'
           {...form.getInputProps('email')}
         />
-        <Button mt='sm' type='submit' loading={changeEmailPromise.isLoading}>
+        <Button mt='sm' type='submit' loading={isPending}>
           Change Email
         </Button>
       </form>
@@ -199,8 +195,8 @@ const ChangePasswordPanel = () => {
     },
   });
 
-  const changePasswordPromise = usePromise({
-    promiseFn: changePassword,
+  const { isError, isSuccess, isPending, mutate } = useMutation({
+    mutationFn: changePassword,
 
     onError(err: AxiosError<any>) {
       const message = err.response?.data?.message;
@@ -210,7 +206,7 @@ const ChangePasswordPanel = () => {
 
   return (
     <Box maw={400} mx='auto' mt='sm'>
-      {changePasswordPromise.isError && (
+      {isError && (
         <Alert
           color='red'
           title='Changing password failed'
@@ -219,7 +215,7 @@ const ChangePasswordPanel = () => {
           {error}
         </Alert>
       )}
-      {changePasswordPromise.isSuccess && (
+      {isSuccess && (
         <Alert
           color='green'
           title='Password changed successfuly'
@@ -229,7 +225,7 @@ const ChangePasswordPanel = () => {
         </Alert>
       )}
 
-      <form onSubmit={form.onSubmit(changePasswordPromise.call)}>
+      <form onSubmit={form.onSubmit((values) => mutate(values))}>
         <PasswordInput
           placeholder='old password'
           label='Old Password'
@@ -240,7 +236,7 @@ const ChangePasswordPanel = () => {
           label='New Password'
           {...form.getInputProps('newPassword')}
         />
-        <Button mt='sm' type='submit' loading={changePasswordPromise.isLoading}>
+        <Button mt='sm' type='submit' loading={isPending}>
           Change Password
         </Button>
       </form>
@@ -249,7 +245,8 @@ const ChangePasswordPanel = () => {
 };
 
 const EditProfilePanel = () => {
-  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+
   const auth = useContext(AuthContext);
   const [error, setError] = useState('');
 
@@ -260,10 +257,12 @@ const EditProfilePanel = () => {
     },
   });
 
-  const editProfilePromise = usePromise({
-    promiseFn: editProfile,
+  const { isError, isPending, mutate } = useMutation({
+    mutationFn: editProfile,
     onSuccess() {
-      navigate(0);
+      queryClient.invalidateQueries({
+        queryKey: ['current-user', 'get-current-user'],
+      });
     },
 
     onError(err: AxiosError<any>) {
@@ -274,7 +273,7 @@ const EditProfilePanel = () => {
 
   return (
     <Box maw={400} mx='auto' mt='sm'>
-      {editProfilePromise.isError && (
+      {isError && (
         <Alert
           color='red'
           title='Profie changing failed'
@@ -284,7 +283,7 @@ const EditProfilePanel = () => {
         </Alert>
       )}
 
-      <form onSubmit={form.onSubmit(editProfilePromise.call)}>
+      <form onSubmit={form.onSubmit((values) => mutate(values))}>
         <TextInput
           label='Name'
           placeholder='Your display name'
@@ -295,7 +294,7 @@ const EditProfilePanel = () => {
           placeholder='A summery about your self'
           {...form.getInputProps('bio')}
         />
-        <Button mt='sm' type='submit'>
+        <Button mt='sm' type='submit' loading={isPending}>
           Save
         </Button>
       </form>

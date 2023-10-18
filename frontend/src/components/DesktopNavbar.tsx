@@ -1,4 +1,5 @@
-import { Link } from 'react-router-dom';
+import { useContext } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import {
   Avatar,
   Button,
@@ -14,22 +15,23 @@ import {
   IconPlus,
   IconSettings,
 } from '@tabler/icons-react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+
 import AuthContext from '../context/AuthContext';
-import { useContext } from 'react';
 import { logout } from '../api/api';
-import usePromise from '../hooks/usePromise';
-import { useNavigate } from 'react-router-dom';
 
 function DesktopProfileMenu() {
   const navigate = useNavigate();
-  const auth = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
+  const queryClient = useQueryClient();
 
-  const logoutPromise = usePromise({
-    promiseFn: logout,
+  const { mutate, isPending } = useMutation({
+    mutationFn: logout,
 
     onSuccess() {
       navigate('/');
-      navigate(0);
+
+      queryClient.invalidateQueries({ queryKey: ['current-user'] });
     },
   });
   return (
@@ -40,7 +42,7 @@ function DesktopProfileMenu() {
           rightSection={<IconChevronDown />}
           leftSection={<Avatar />}
         >
-          {auth.user?.name}
+          {user?.name}
         </Button>
       </Menu.Target>
       <Menu.Dropdown>
@@ -60,9 +62,9 @@ function DesktopProfileMenu() {
         </Menu.Item>
         <Menu.Item
           color='red'
-          onClick={logoutPromise.call}
+          onClick={() => mutate()}
           leftSection={<IconLogout />}
-          disabled={logoutPromise.isLoading}
+          disabled={isPending}
         >
           Logout
         </Menu.Item>
@@ -72,11 +74,11 @@ function DesktopProfileMenu() {
 }
 
 function DesktopRightBar() {
-  const auth = useContext(AuthContext);
+  const { isLoggedIn } = useContext(AuthContext);
 
   return (
     <Group ml='xl' visibleFrom='sm'>
-      {auth.isLoggedIn ? (
+      {isLoggedIn ? (
         <>
           <Button
             variant='outline'

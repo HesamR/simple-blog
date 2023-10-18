@@ -1,4 +1,5 @@
 import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import {
   Box,
   TextInput,
@@ -8,14 +9,15 @@ import {
   Alert,
 } from '@mantine/core';
 import { useForm, isNotEmpty, isEmail } from '@mantine/form';
-import { Link, useNavigate } from 'react-router-dom';
 import { AxiosError } from 'axios';
 
-import usePromise from '../hooks/usePromise';
 import { LoginInput, login } from '../api/api';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 function LoginPage() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
+
   const [errorMessage, setErrorMessage] = useState('');
 
   const form = useForm<LoginInput>({
@@ -26,12 +28,12 @@ function LoginPage() {
     },
   });
 
-  const loginPromise = usePromise({
-    promiseFn: login,
+  const { mutate, isError, isPending } = useMutation({
+    mutationFn: login,
 
     onSuccess() {
       navigate('/');
-      navigate(0);
+      queryClient.invalidateQueries({ queryKey: ['current-user'] });
     },
 
     onError(error: AxiosError<any>) {
@@ -42,12 +44,12 @@ function LoginPage() {
 
   return (
     <Box maw={340} mx='auto'>
-      {loginPromise.isError && (
+      {isError && (
         <Alert variant='light' color='red' title='Login Failed!'>
           {errorMessage}
         </Alert>
       )}
-      <form onSubmit={form.onSubmit(loginPromise.call)}>
+      <form onSubmit={form.onSubmit((values) => mutate(values))}>
         <TextInput
           withAsterisk
           label='Email'
@@ -62,7 +64,7 @@ function LoginPage() {
         />
         <Group justify='flex-end' mt='md'>
           <Link to='/forget-password'>Forget password?</Link>
-          <Button loading={loginPromise.isLoading} type='submit'>
+          <Button loading={isPending} type='submit'>
             Login
           </Button>
         </Group>

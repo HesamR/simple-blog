@@ -65,6 +65,7 @@ export interface CreateArticleInput {
 
 export interface CreateArticleOutput {
   id: number;
+  userId: number;
 }
 
 export interface EditArticleInput {
@@ -124,7 +125,7 @@ export interface DeleteArticleInput {
   articleId: number;
 }
 
-export async function login(input?: LoginInput): Promise<void> {
+export async function login(input: LoginInput): Promise<void> {
   return api.post('/auth/login', input);
 }
 
@@ -132,23 +133,23 @@ export async function logout(): Promise<void> {
   return api.post('/auth/logout');
 }
 
-export async function register(input?: RegisterInput): Promise<void> {
+export async function register(input: RegisterInput): Promise<void> {
   return api.post('/auth/register', input);
 }
 
-export async function verifyEmail(input?: VerifyEmailInput): Promise<boolean> {
+export async function verifyEmail(input: VerifyEmailInput): Promise<boolean> {
   const res = await api.post('/auth/verify-email', input);
   return res.data;
 }
 
 export async function forgetPassword(
-  input?: ForgetPasswordInput,
+  input: ForgetPasswordInput,
 ): Promise<void> {
   return api.post('/auth/forget-password', input);
 }
 
 export async function forgetPasswordComplete(
-  input?: ForgetPasswordCompleteInput,
+  input: ForgetPasswordCompleteInput,
 ): Promise<boolean> {
   const res = await api.post('/auth/forget-password-complete', input);
   return res.data;
@@ -163,7 +164,7 @@ export async function sendVerifyEmail(): Promise<void> {
   return api.post('/auth/send-verify-email');
 }
 
-export async function changeEmail(input?: ChangeEmailInput): Promise<void> {
+export async function changeEmail(input: ChangeEmailInput): Promise<void> {
   return api.post('/auth/change-email', input);
 }
 
@@ -173,32 +174,37 @@ export async function changePassword(
   return api.post('/auth/change-password', input);
 }
 
-export async function currentUser(): Promise<ProfileOutput> {
+export async function getCurrentUser(): Promise<ProfileOutput> {
   const res = await api.get('/user/current');
   return res.data;
 }
 
-export async function profileById(id?: number): Promise<ProfileByIdOutput> {
+export async function getProfileById(id: number): Promise<ProfileByIdOutput> {
   const res = await api.get(`/user/profile/${id}`);
   return res.data;
 }
 
-export async function editProfile(input?: EditProfileInput): Promise<void> {
+export async function editProfile(input: EditProfileInput): Promise<void> {
   return api.post('/user/edit', input);
 }
 
 export async function createArticle(
-  input?: CreateArticleInput,
+  input: CreateArticleInput,
 ): Promise<CreateArticleOutput> {
   const res = await api.post('/article/create', input);
   return res.data;
 }
 
-export async function editArticle(input?: EditArticleInput): Promise<void> {
+export async function editArticle(input: EditArticleInput): Promise<void> {
   return api.post('/article/edit', input);
 }
 
-export async function getCurrentUserArticle(id?: number): Promise<UserArticle> {
+export async function getMyArticles(): Promise<ArticlePartial2[]> {
+  const res = await api.get('/article/current-user');
+  return res.data;
+}
+
+export async function getMyArticleById(id: number): Promise<UserArticle> {
   const res = await api.get(`/article/current-user/${id}`);
   return res.data;
 }
@@ -208,23 +214,18 @@ export async function getAllArticles(): Promise<ArticlePartial[]> {
   return res.data;
 }
 
-export async function getArticleById(id?: number): Promise<Article> {
+export async function getArticleById(id: number): Promise<Article> {
   const res = await api.get(`/article/${id}`);
   return res.data;
 }
 
-export async function getArticleByUserId(
-  userId?: number,
+export async function getUserArticles(
+  userId: number,
 ): Promise<ArticlePartial2[]> {
   const res = await api.get(`/article/user/${userId}`);
   return res.data;
 }
 
-export async function getMyArticles(): Promise<ArticlePartial2[]> {
-  const res = await api.get('/article/current-user');
-  return res.data;
-}
-
-export async function deleteArticle(input?: DeleteArticleInput): Promise<void> {
+export async function deleteArticle(input: DeleteArticleInput): Promise<void> {
   return api.post('/article/delete', input);
 }

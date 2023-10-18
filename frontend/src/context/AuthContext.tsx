@@ -1,7 +1,6 @@
-import { createContext, ReactNode, useEffect, useState } from 'react';
-import { currentUser, ProfileOutput } from '../api/api';
-import usePromise from '../hooks/usePromise';
-import LoadFallback from '../components/LoadFallback';
+import { createContext, ReactNode } from 'react';
+import { getCurrentUser, ProfileOutput } from '../api/api';
+import { useQuery } from '@tanstack/react-query';
 
 interface IAuthContext {
   isLoggedIn: boolean;
@@ -19,35 +18,27 @@ const AuthContext = createContext<IAuthContext>({
 });
 
 export function AuthProvider({ children }: Props) {
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-
-  const profilePromise = usePromise({
-    promiseFn: currentUser,
-
-    onSuccess(out) {
-      if (out.expiresAt > Date.now()) {
-        setIsLoggedIn(true);
-      }
-    },
-
-    onError() {
-      setIsLoggedIn(false);
-    },
+  const { isSuccess, data } = useQuery({
+    queryKey: ['current-user', 'get-current-user'],
+    queryFn: getCurrentUser,
   });
 
-  useEffect(() => {
-    profilePromise.call();
-  }, []);
+  const isLoggedIn = () => {
+    if (isSuccess) {
+      return data.expiresAt > Date.now() ? true : false;
+    }
+    return false;
+  };
 
   return (
     <AuthContext.Provider
       value={{
-        isSucceed: profilePromise.isSuccess,
-        isLoggedIn,
-        user: profilePromise.output,
+        isSucceed: isSuccess,
+        isLoggedIn: isLoggedIn(),
+        user: data,
       }}
     >
-      {profilePromise.isLoading ? <LoadFallback /> : <>{children}</>}
+      {children}
     </AuthContext.Provider>
   );
 }

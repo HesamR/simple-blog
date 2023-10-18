@@ -8,13 +8,13 @@ import {
   Alert,
 } from '@mantine/core';
 import { AxiosError } from 'axios';
-import usePromise from '../hooks/usePromise';
-import { createArticle } from '../api/api';
+import { CreateArticleOutput, createArticle } from '../api/api';
 import { isNotEmpty, useForm } from '@mantine/form';
 import { useState } from 'react';
 import { IconExclamationCircle } from '@tabler/icons-react';
 import { useNavigate } from 'react-router-dom';
 import ArticleEditor from '../components/ArticleEditor';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 interface FormValue {
   title: string;
@@ -23,6 +23,8 @@ interface FormValue {
 
 function CreateArticlePage() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
+
   const [error, setError] = useState('');
   const [content, setContent] = useState('');
 
@@ -33,11 +35,23 @@ function CreateArticlePage() {
     },
   });
 
-  const createArticlePromise = usePromise({
-    promiseFn: createArticle,
-    onSuccess({ id }) {
+  const { isError, isPending, mutate } = useMutation({
+    mutationFn: createArticle,
+
+    onSuccess({ id, userId }: CreateArticleOutput) {
       navigate(`/edit-article?id=${id}`);
+
+      queryClient.invalidateQueries({
+        queryKey: ['get-all-articles'],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['get-user-articles', userId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['current-user', 'get-my-articles'],
+      });
     },
+
     onError(error: AxiosError<any>) {
       const message = error.response?.data?.message;
       setError(message ? message : error.message);
@@ -45,7 +59,7 @@ function CreateArticlePage() {
   });
 
   const handleForm = ({ title, summery }: FormValue) => {
-    createArticlePromise.call({
+    mutate({
       title,
       summery,
       content,
@@ -55,7 +69,7 @@ function CreateArticlePage() {
   return (
     <Group wrap='wrap' gap='md' justify='center' align='flex-start' grow>
       <Box miw={400} maw={400}>
-        {createArticlePromise.isError && (
+        {isError && (
           <Alert
             color='red'
             title='Create Article Failed'
@@ -68,11 +82,7 @@ function CreateArticlePage() {
           <form onSubmit={form.onSubmit(handleForm)}>
             <TextInput label='Title' {...form.getInputProps('title')} />
             <Textarea label='Summery' {...form.getInputProps('summery')} />
-            <Button
-              mt='sm'
-              type='submit'
-              loading={createArticlePromise.isLoading}
-            >
+            <Button mt='sm' type='submit' loading={isPending}>
               Create
             </Button>
           </form>

@@ -2,8 +2,8 @@ import { useState } from 'react';
 import { AxiosError } from 'axios';
 import { ForgetPasswordInput, forgetPassword } from '../api/api';
 import { isEmail, useForm } from '@mantine/form';
-import usePromise from '../hooks/usePromise';
 import { Alert, Box, Button, Group, TextInput } from '@mantine/core';
+import { useMutation } from '@tanstack/react-query';
 
 function ForgetPasswordPage() {
   const [errorMessage, setErrorMessage] = useState('');
@@ -14,8 +14,8 @@ function ForgetPasswordPage() {
     },
   });
 
-  const fpPromise = usePromise({
-    promiseFn: forgetPassword,
+  const { isError, isSuccess, isPending, mutate } = useMutation({
+    mutationFn: forgetPassword,
 
     onError(error: AxiosError<any>) {
       const message = error.response?.data?.message;
@@ -25,7 +25,7 @@ function ForgetPasswordPage() {
 
   return (
     <Box maw={340} mx='auto'>
-      {fpPromise.isError && (
+      {isError && (
         <Alert
           variant='light'
           color='red'
@@ -34,7 +34,7 @@ function ForgetPasswordPage() {
           {errorMessage}
         </Alert>
       )}
-      {fpPromise.isSuccess && (
+      {isSuccess && (
         <Alert
           variant='light'
           color='green'
@@ -43,7 +43,7 @@ function ForgetPasswordPage() {
           check your email to complete the proccess
         </Alert>
       )}
-      <form onSubmit={form.onSubmit(fpPromise.call)}>
+      <form onSubmit={form.onSubmit((values) => mutate(values))}>
         <TextInput
           withAsterisk
           label='Email'
@@ -51,7 +51,7 @@ function ForgetPasswordPage() {
           {...form.getInputProps('email')}
         />
         <Group justify='flex-end' mt='md'>
-          <Button loading={fpPromise.isLoading} type='submit'>
+          <Button loading={isPending} type='submit'>
             Send Request
           </Button>
         </Group>

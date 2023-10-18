@@ -10,13 +10,14 @@ import {
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { isNotEmpty, useForm } from '@mantine/form';
 import { IconCheck, IconExclamationCircle } from '@tabler/icons-react';
-import { useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { AxiosError } from 'axios';
 
-import usePromise from '../hooks/usePromise';
-import { editArticle, getCurrentUserArticle } from '../api/api';
+import { editArticle, getMyArticleById } from '../api/api';
 import ArticleEditor from '../components/ArticleEditor';
 import LoadFallback from '../components/LoadFallback';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
+import AuthContext from '../context/AuthContext';
 
 interface FormValue {
   title: string;
@@ -25,14 +26,21 @@ interface FormValue {
 
 function EditArticlePage() {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const [params] = useSearchParams();
+
+  const auth = useContext(AuthContext);
 
   const [error, setError] = useState('');
   const [content, setContent] = useState('');
 
-  const [params] = useSearchParams();
   const articleId = params.has('id') ? parseInt(params.get('id') ?? '-1') : -1;
-
   if (articleId < 0) {
+    navigate('/');
+  }
+
+  const userId = auth.user?.id ?? -1;
+  if (userId < 0) {
     navigate('/');
   }
 
@@ -43,50 +51,65 @@ function EditArticlePage() {
     },
   });
 
-  const editArticlePromise = usePromise({
-    promiseFn: editArticle,
+  const edit = useMutation({
+    mutationFn: editArticle,
+
+    onSuccess() {
+      queryClient.invalidateQueries({
+        queryKey: ['current-user', 'get-my-article-by-id', articleId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['current-user', 'get-my-articles'],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['get-user-articles', userId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['get-article-by-id', articleId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['get-all-articles'],
+      });
+    },
+
     onError(error: AxiosError<any>) {
       const message = error.response?.data?.message;
       setError(message ? message : error.message);
     },
   });
 
-  const getArticlePromise = usePromise({
-    promiseFn: getCurrentUserArticle,
-    onError() {
-      navigate('/');
-    },
-    onSuccess(out) {
-      form.setFieldValue('title', out.title);
-      form.setFieldValue('summery', out.summery);
-      setContent(out.content);
-    },
+  const article = useQuery({
+    queryKey: ['current-user', 'get-my-article-by-id', articleId],
+    queryFn: () => getMyArticleById(articleId),
+    throwOnError: true,
   });
 
-  useEffect(() => {
-    getArticlePromise.call(articleId);
-  }, []);
-
   const handleForm = ({ title, summery }: FormValue) => {
-    const oldArtile = getArticlePromise.output ?? {
-      title: '',
-      summery: '',
-      content: '',
-    };
+    if (article.isSuccess) {
+      const old = article.data;
 
-    editArticlePromise.call({
-      articleId,
-      title: title !== oldArtile.title ? title : undefined,
-      summery: summery !== oldArtile.summery ? summery : undefined,
-      content: content !== oldArtile.content ? content : undefined,
-    });
+      edit.mutate({
+        articleId,
+        title: title !== old.title ? title : undefined,
+        summery: summery !== old.summery ? summery : undefined,
+        content: content !== old.content ? content : undefined,
+      });
+    }
   };
+
+  useEffect(() => {
+    if (article.isSuccess) {
+      form.setFieldValue('title', article.data.title);
+      form.setFieldValue('summery', article.data.summery);
+      setContent(article.data.content);
+    }
+  }, [article.isSuccess]);
 
   return (
     <Group wrap='wrap' gap='md' justify='center' align='flex-start' grow>
       <Box miw={400} maw={400}>
         <Fieldset>
-          {editArticlePromise.isError && (
+          {edit.isError && (
             <Alert
               color='red'
               title='Create Article Failed'
@@ -95,31 +118,27 @@ function EditArticlePage() {
               {error}
             </Alert>
           )}
-          {editArticlePromise.isSuccess && (
+          {edit.isSuccess && (
             <Alert color='green' title='article updated' icon={<IconCheck />}>
               your edits have been saved!
             </Alert>
           )}
-          {getArticlePromise.isLoading && <LoadFallback />}
-          {getArticlePromise.isSuccess && (
+          {article.isPending && <LoadFallback />}
+          {article.isSuccess && (
             <form onSubmit={form.onSubmit(handleForm)}>
               <TextInput label='Title' {...form.getInputProps('title')} />
               <Textarea label='Summery' {...form.getInputProps('summery')} />
-              <Button
-                mt='sm'
-                type='submit'
-                loading={editArticlePromise.isLoading}
-              >
+              <Button mt='sm' type='submit' loading={edit.isPending}>
                 Edit
               </Button>
             </form>
           )}
         </Fieldset>
       </Box>
-      {getArticlePromise.isLoading && <LoadFallback />}
-      {getArticlePromise.isSuccess && (
+      {article.isLoading && <LoadFallback />}
+      {article.isSuccess && (
         <ArticleEditor
-          content={getArticlePromise.output?.content}
+          content={article.data.content}
           onUpdate={({ editor }) => setContent(editor.getHTML())}
         />
       )}

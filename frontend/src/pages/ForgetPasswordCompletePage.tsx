@@ -2,9 +2,10 @@ import { useState } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { Alert, Box, Button, Group, PasswordInput } from '@mantine/core';
 import { AxiosError } from 'axios';
+
 import { forgetPasswordComplete } from '../api/api';
 import { useForm, matches } from '@mantine/form';
-import usePromise from '../hooks/usePromise';
+import { useMutation } from '@tanstack/react-query';
 
 interface FormValue {
   newPassword: string;
@@ -12,7 +13,7 @@ interface FormValue {
 
 function ForgetPasswordCompletePage() {
   const navigate = useNavigate();
-  const [searchParam] = useSearchParams();
+  const [params] = useSearchParams();
   const [errorMessage, setErrorMessage] = useState('');
 
   const form = useForm<FormValue>({
@@ -24,8 +25,14 @@ function ForgetPasswordCompletePage() {
     },
   });
 
-  const fpcPromise = usePromise({
-    promiseFn: forgetPasswordComplete,
+  const token = params.get('token') ?? '';
+
+  if (token === '') {
+    navigate('/');
+  }
+
+  const { isError, isPending, mutate } = useMutation({
+    mutationFn: forgetPasswordComplete,
 
     onSuccess() {
       navigate('/login');
@@ -37,14 +44,9 @@ function ForgetPasswordCompletePage() {
     },
   });
 
-  const handleSubmit = ({ newPassword }: FormValue) => {
-    const token = searchParam.get('token');
-    token ? fpcPromise.call({ token, newPassword }) : navigate('/');
-  };
-
   return (
     <Box maw={340} mx='auto'>
-      {fpcPromise.isError && (
+      {isError && (
         <Alert
           variant='light'
           color='red'
@@ -53,7 +55,11 @@ function ForgetPasswordCompletePage() {
           {errorMessage}
         </Alert>
       )}
-      <form onSubmit={form.onSubmit(handleSubmit)}>
+      <form
+        onSubmit={form.onSubmit(({ newPassword }) =>
+          mutate({ token, newPassword }),
+        )}
+      >
         <PasswordInput
           withAsterisk
           label='New Password'
@@ -61,7 +67,7 @@ function ForgetPasswordCompletePage() {
           {...form.getInputProps('newPassword')}
         />
         <Group justify='flex-end' mt='md'>
-          <Button loading={fpcPromise.isLoading} type='submit'>
+          <Button loading={isPending} type='submit'>
             Send Request
           </Button>
         </Group>

@@ -9,26 +9,28 @@ import {
 } from '@tabler/icons-react';
 import { useContext } from 'react';
 import AuthContext from '../context/AuthContext';
-import usePromise from '../hooks/usePromise';
 import { logout } from '../api/api';
 import { useNavigate, Link } from 'react-router-dom';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
 
 interface Props {
   onClick: () => void;
 }
 
 function MobileProfileMenu({ onClick }: Props) {
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const { user } = useContext(AuthContext);
+
   const [opened, { toggle }] = useDisclosure();
 
-  const navigate = useNavigate();
-  const auth = useContext(AuthContext);
-
-  const logoutPromise = usePromise({
-    promiseFn: logout,
+  const { mutate, isPending } = useMutation({
+    mutationFn: logout,
 
     onSuccess() {
       navigate('/');
-      navigate(0);
+
+      queryClient.invalidateQueries({ queryKey: ['current-user'] });
     },
   });
 
@@ -42,7 +44,7 @@ function MobileProfileMenu({ onClick }: Props) {
         size='md'
         onClick={toggle}
       >
-        {auth.user?.name}
+        {user?.name}
       </Button>
       <Collapse in={opened}>
         <Button
@@ -69,8 +71,8 @@ function MobileProfileMenu({ onClick }: Props) {
           color='red'
           variant='subtle'
           leftSection={<IconLogout />}
-          onClick={logoutPromise.call}
-          loading={logoutPromise.isLoading}
+          onClick={() => mutate()}
+          loading={isPending}
           fullWidth
         >
           Logout
@@ -92,11 +94,11 @@ function MobileProfileMenu({ onClick }: Props) {
 }
 
 function MobileNavbar({ onClick }: Props) {
-  const auth = useContext(AuthContext);
+  const { isLoggedIn } = useContext(AuthContext);
 
   return (
     <>
-      {auth.isLoggedIn ? (
+      {isLoggedIn ? (
         <MobileProfileMenu onClick={onClick} />
       ) : (
         <Stack>

@@ -1,24 +1,40 @@
 import { Link } from 'react-router-dom';
 import { Badge, Button, Card, Divider, Group, Text } from '@mantine/core';
-import { ArticlePartial2, deleteArticle } from '../api/api';
-import usePromise from '../hooks/usePromise';
-import { useNavigate } from 'react-router-dom';
 import { IconEdit, IconTrash } from '@tabler/icons-react';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+
+import { ArticlePartial2, deleteArticle } from '../api/api';
+import { useContext } from 'react';
+import AuthContext from '../context/AuthContext';
 
 interface Props {
   article: ArticlePartial2;
 }
 
 function EditArticleCard({ article }: Props) {
-  const navigate = useNavigate();
-  const deletePromise = usePromise({
-    promiseFn: deleteArticle,
-    onError() {
-      navigate('/');
-    },
+  const queryClient = useQueryClient();
+  const auth = useContext(AuthContext);
 
+  const userId = auth.user?.id ?? -1;
+
+  const { isPending, mutate } = useMutation({
+    mutationFn: deleteArticle,
     onSuccess() {
-      navigate(0);
+      queryClient.invalidateQueries({
+        queryKey: ['get-all-articles'],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['get-user-articles', userId],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['get-article-by-id', article.id],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['current-user', 'get-my-articles'],
+      });
+      queryClient.invalidateQueries({
+        queryKey: ['current-user', 'get-my-article-by-id', article.id],
+      });
     },
   });
 
@@ -56,9 +72,10 @@ function EditArticleCard({ article }: Props) {
       <Group pt='sm' justify='end'>
         <Button
           variant='outline'
+          component={Link}
           size='compact-sm'
           rightSection={<IconEdit size={16} />}
-          onClick={() => navigate(`/edit-article?id=${article.id}`)}
+          to={`/edit-article?id=${article.id}`}
         >
           Edit
         </Button>
@@ -66,8 +83,8 @@ function EditArticleCard({ article }: Props) {
           color='red'
           size='compact-sm'
           rightSection={<IconTrash size={16} />}
-          loading={deletePromise.isLoading}
-          onClick={() => deletePromise.call({ articleId: article.id })}
+          loading={isPending}
+          onClick={() => mutate({ articleId: article.id })}
         >
           Delete
         </Button>

@@ -12,7 +12,7 @@ import {
 import { useForm, isEmail, matches, isNotEmpty } from '@mantine/form';
 import { AxiosError } from 'axios';
 import { register, RegisterInput } from '../api/api';
-import usePromise from '../hooks/usePromise';
+import { useMutation } from '@tanstack/react-query';
 
 function RegisterPage() {
   const navigate = useNavigate();
@@ -30,8 +30,8 @@ function RegisterPage() {
     },
   });
 
-  const registerPromise = usePromise({
-    promiseFn: register,
+  const { isError, isPending, mutate } = useMutation({
+    mutationFn: register,
 
     onSuccess() {
       navigate('/login');
@@ -46,12 +46,12 @@ function RegisterPage() {
   return (
     <>
       <Box maw={340} mx='auto'>
-        {registerPromise.isError && (
+        {isError && (
           <Alert variant='light' color='red' title='Register Failed!'>
             {errorMessage}
           </Alert>
         )}{' '}
-        <form onSubmit={form.onSubmit(registerPromise.call)}>
+        <form onSubmit={form.onSubmit((values) => mutate(values))}>
           <TextInput
             withAsterisk
             label='Email'
@@ -76,7 +76,7 @@ function RegisterPage() {
             {...form.getInputProps('bio')}
           />
           <Group justify='flex-end' mt='md'>
-            <Button type='submit' loading={registerPromise.isLoading}>
+            <Button type='submit' loading={isPending}>
               Register
             </Button>
           </Group>
