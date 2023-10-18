@@ -7,6 +7,9 @@ import {
   Group,
   Button,
   Alert,
+  Card,
+  Text,
+  Divider,
 } from '@mantine/core';
 import { useForm, isNotEmpty, isEmail } from '@mantine/form';
 import { AxiosError } from 'axios';
@@ -44,31 +47,39 @@ function LoginPage() {
 
   return (
     <Box maw={340} mx='auto'>
-      {isError && (
-        <Alert variant='light' color='red' title='Login Failed!'>
-          {errorMessage}
-        </Alert>
-      )}
-      <form onSubmit={form.onSubmit((values) => mutate(values))}>
-        <TextInput
-          withAsterisk
-          label='Email'
-          placeholder='your@email.com'
-          {...form.getInputProps('email')}
-        />
-        <PasswordInput
-          withAsterisk
-          label='Password'
-          placeholder='Password'
-          {...form.getInputProps('password')}
-        />
-        <Group justify='flex-end' mt='md'>
-          <Link to='/forget-password'>Forget password?</Link>
-          <Button loading={isPending} type='submit'>
+      <Card shadow='lg' radius='lg'>
+        <Group justify='center' mb='sm'>
+          <Text size='lg' fw={700} c='dimmed'>
             Login
-          </Button>
+          </Text>
         </Group>
-      </form>
+        <Divider mb='sm' />
+        {isError && (
+          <Alert variant='light' color='red' title='Login Failed!'>
+            {errorMessage}
+          </Alert>
+        )}
+        <form onSubmit={form.onSubmit((values) => mutate(values))}>
+          <TextInput
+            withAsterisk
+            label='Email'
+            placeholder='your@email.com'
+            {...form.getInputProps('email')}
+          />
+          <PasswordInput
+            withAsterisk
+            label='Password'
+            placeholder='Password'
+            {...form.getInputProps('password')}
+          />
+          <Group justify='flex-end' mt='md'>
+            <Link to='/forget-password'>Forget password?</Link>
+            <Button loading={isPending} type='submit'>
+              Login
+            </Button>
+          </Group>
+        </form>
+      </Card>
     </Box>
   );
 }

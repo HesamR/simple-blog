@@ -8,6 +8,9 @@ import {
   Textarea,
   PasswordInput,
   Alert,
+  Card,
+  Text,
+  Divider,
 } from '@mantine/core';
 import { useForm, isEmail, matches, isNotEmpty } from '@mantine/form';
 import { AxiosError } from 'axios';
@@ -44,8 +47,14 @@ function RegisterPage() {
   });
 
   return (
-    <>
-      <Box maw={340} mx='auto'>
+    <Box maw={340} mx='auto'>
+      <Card shadow='lg' radius='lg'>
+        <Group justify='center' mb='sm'>
+          <Text size='lg' fw={700} c='dimmed'>
+            Register
+          </Text>
+        </Group>
+        <Divider mb='sm' />
         {isError && (
           <Alert variant='light' color='red' title='Register Failed!'>
             {errorMessage}
@@ -81,8 +90,8 @@ function RegisterPage() {
             </Button>
           </Group>
         </form>
-      </Box>
-    </>
+      </Card>
+    </Box>
   );
 }
 
