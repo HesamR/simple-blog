@@ -45,10 +45,10 @@ export class AuthController {
 
     res.cookie('session', session.id, {
       expires: session.expiresAt,
-      sameSite: isDev() ? 'none' : 'strict',
+      sameSite: isDev ? 'none' : 'strict',
       httpOnly: true,
       signed: true,
-      secure: isDev(),
+      secure: isDev,
     });
   }
 

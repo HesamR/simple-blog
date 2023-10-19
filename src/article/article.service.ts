@@ -4,7 +4,6 @@ import { Article } from '@prisma/client';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateArticleDto } from './dto/create-article.dto';
 import { EditArticleDto } from './dto/edit-article.dto';
-import { promises } from 'dns';
 
 @Injectable()
 export class ArticleService {

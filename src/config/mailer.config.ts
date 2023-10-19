@@ -23,6 +23,6 @@ export default registerAs(
         adapter: new HandlebarsAdapter(),
         options: { strict: true },
       },
-      preview: isDev(),
+      preview: isDev,
     }) as MailerOptions,
 );
