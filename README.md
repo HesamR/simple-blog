@@ -1,7 +1,7 @@
 ## Simple blog
 
 a very simple blog for demonstration purposes.
-you can view the app on [here](https://simple-blog.hesamr.top)
+you can view the app on [here](https://simple-blog-kgft.onrender.com)
 
 - CAUTION: this is hosted on a free service ([Render](https://render.com)) so it might take a while to load up (it spins down after periods of inactivity)
 
